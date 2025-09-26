@@ -1,10 +1,10 @@
 <template>
   <div class="game-settings">
     <!-- Loading State -->
-    <div v-if="loading" class="loading">
-      <div class="spinner"></div>
-      <p>Searching for game settings...</p>
-    </div>
+    <Spinner 
+      v-if="loading" 
+      message="Searching for game settings..."
+    />
 
     <!-- Error State -->
     <ErrorMessage 
@@ -68,6 +68,7 @@ import ProcessingWarning from './ProcessingWarning.vue'
 import TabComponent from './TabComponent.vue'
 import ErrorMessage from './ErrorMessage.vue'
 import PlatinumAlert from './PlatinumAlert.vue'
+import Spinner from './Spinner.vue'
 import { flattenObject } from '../utils/objectUtils.js'
 
 export default {
@@ -77,7 +78,8 @@ export default {
     ProcessingWarning,
     TabComponent,
     ErrorMessage,
-    PlatinumAlert
+    PlatinumAlert,
+    Spinner
   },
   props: {
     selectedGame: {
@@ -195,26 +197,6 @@ export default {
 <style scoped>
 .game-settings {
   width: 100%;
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 .results-section h2 {

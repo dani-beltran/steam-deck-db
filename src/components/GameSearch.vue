@@ -63,10 +63,10 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="gameSearchLoading" class="loading">
-      <div class="spinner"></div>
-      <p>Searching for games...</p>
-    </div>
+    <Spinner 
+      v-if="gameSearchLoading" 
+      message="Searching for games..."
+    />
 
     <!-- Error State -->
     <ErrorMessage 
@@ -80,11 +80,13 @@
 <script>
 import { searchSteamGamesByName } from '../services/steam/steamApi.js'
 import ErrorMessage from './ErrorMessage.vue'
+import Spinner from './Spinner.vue'
 
 export default {
   name: 'GameSearch',
   components: {
-    ErrorMessage
+    ErrorMessage,
+    Spinner
   },
   emits: ['game-selected'],
   data() {
@@ -232,26 +234,6 @@ export default {
   width: 24px;
   height: 24px;
   color: white;
-}
-
-.loading {
-  text-align: center;
-  padding: 40px;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f4f6;
-  border-top: 4px solid #667eea;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Game Search Results Styles */
