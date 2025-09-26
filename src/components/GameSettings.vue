@@ -19,6 +19,15 @@
       <!-- Tab Navigation -->
       <div class="tab-navigation">
         <button 
+          v-if="flattenedGameSettings.length > 0"
+          :class="['tab-button', { active: activeTab === 'game' }]"
+          @click="activeTab = 'game'"
+        >
+          Game Settings
+          <span class="tab-count">({{ flattenedGameSettings.length }})</span>
+        </button>
+
+        <button 
           v-if="flattenedLaunchConfiguration.length > 0"
           :class="['tab-button', { active: activeTab === 'launch' }]"
           @click="activeTab = 'launch'"
@@ -34,103 +43,23 @@
           Steam Deck Settings
           <span class="tab-count">({{ flattenedSteamDeckSettings.length }})</span>
         </button>
-        <button 
-          v-if="flattenedGameSettings.length > 0"
-          :class="['tab-button', { active: activeTab === 'game' }]"
-          @click="activeTab = 'game'"
-        >
-          Game Settings
-          <span class="tab-count">({{ flattenedGameSettings.length }})</span>
-        </button>
       </div>
 
       <!-- Tab Content -->
       <div class="tab-content">
+        <!-- Game Settings Table -->
+        <div v-if="activeTab === 'game' && flattenedGameSettings.length > 0">
+          <SettingsTable :data="flattenedGameSettings" key-prefix="game" />
+        </div>
+        
         <!-- Launch Configuration Table -->
-        <div v-if="activeTab === 'launch' && flattenedLaunchConfiguration.length > 0" class="table-container">
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in flattenedLaunchConfiguration" :key="'launch-' + row.key">
-                <td class="property-cell">{{ row.key }}</td>
-                <td class="value-cell">
-                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="typeof row.value === 'number'" class="number-value">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
-                    null
-                  </span>
-                  <span v-else>{{ row.value }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div v-if="activeTab === 'launch' && flattenedLaunchConfiguration.length > 0">
+          <SettingsTable :data="flattenedLaunchConfiguration" key-prefix="launch" />
         </div>
 
         <!-- Steam Deck Settings Table -->
-        <div v-if="activeTab === 'steamdeck' && flattenedSteamDeckSettings.length > 0" class="table-container">
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in flattenedSteamDeckSettings" :key="'steamdeck-' + row.key">
-                <td class="property-cell">{{ row.key }}</td>
-                <td class="value-cell">
-                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="typeof row.value === 'number'" class="number-value">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
-                    null
-                  </span>
-                  <span v-else>{{ row.value }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Game Settings Table -->
-        <div v-if="activeTab === 'game' && flattenedGameSettings.length > 0" class="table-container">
-          <table class="results-table">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in flattenedGameSettings" :key="'game-' + row.key">
-                <td class="property-cell">{{ row.key }}</td>
-                <td class="value-cell">
-                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="typeof row.value === 'number'" class="number-value">
-                    {{ row.value }}
-                  </span>
-                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
-                    null
-                  </span>
-                  <span v-else>{{ row.value }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div v-if="activeTab === 'steamdeck' && flattenedSteamDeckSettings.length > 0">
+          <SettingsTable :data="flattenedSteamDeckSettings" key-prefix="steamdeck" />
         </div>
       </div>
     </div>
@@ -153,9 +82,13 @@
 
 <script>
 import nodescriptBE from '../services/nodescriptBE.js'
+import SettingsTable from './SettingsTable.vue'
 
 export default {
   name: 'GameSettings',
+  components: {
+    SettingsTable
+  },
   props: {
     selectedGame: {
       type: Object,
@@ -190,9 +123,9 @@ export default {
     },
     availableTabs() {
       const tabs = []
+      if (this.flattenedGameSettings.length > 0) tabs.push('game')
       if (this.flattenedLaunchConfiguration.length > 0) tabs.push('launch')
       if (this.flattenedSteamDeckSettings.length > 0) tabs.push('steamdeck')
-      if (this.flattenedGameSettings.length > 0) tabs.push('game')
       return tabs
     }
   },
@@ -413,86 +346,6 @@ export default {
   margin-top: 20px;
 }
 
-.table-container {
-  overflow-x: auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.results-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  table-layout: fixed;
-}
-
-.results-table th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 16px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.results-table th:first-child,
-.results-table td:first-child {
-  width: 40%;
-}
-
-.results-table th:nth-child(2),
-.results-table td:nth-child(2) {
-  width: 60%;
-}
-
-.results-table td {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.results-table tr:nth-child(even) {
-  background: #f9fafb;
-}
-
-.results-table tr:hover {
-  background: #f3f4f6;
-}
-
-.property-cell {
-  font-weight: 600;
-  color: #374151;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  overflow-wrap: break-word;
-}
-
-.value-cell {
-  color: #6b7280;
-  word-break: break-all;
-  overflow-wrap: break-word;
-}
-
-.boolean-true {
-  color: #059669;
-  font-weight: 600;
-}
-
-.boolean-false {
-  color: #dc2626;
-  font-weight: 600;
-}
-
-.number-value {
-  color: #7c3aed;
-  font-weight: 600;
-}
-
-.null-value {
-  color: #9ca3af;
-  font-style: italic;
-}
-
 .no-results {
   text-align: center;
   padding: 40px;
@@ -516,22 +369,6 @@ export default {
 
   .tab-count {
     font-size: 0.7rem;
-  }
-
-  .results-table th,
-  .results-table td {
-    padding: 12px;
-    font-size: 0.9rem;
-  }
-  
-  .results-table th:first-child,
-  .results-table td:first-child {
-    width: 50%;
-  }
-
-  .results-table th:nth-child(2),
-  .results-table td:nth-child(2) {
-    width: 50%;
   }
 }
 </style>
