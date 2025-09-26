@@ -13,6 +13,13 @@
       class="error-with-top-margin"
     />
 
+    <!-- Platinum/Native Game Alert -->
+    <PlatinumAlert 
+      v-if="isPlatinumOrNative && results && !loading"
+      :is-platinum="results.is_platinum"
+      :is-native="results.is_native"
+    />
+
     <!-- Results Tabs -->
     <div v-if="results && !loading" class="results-section">
       <h2>Recommended settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
@@ -60,6 +67,7 @@ import SettingsTable from './SettingsTable.vue'
 import ProcessingWarning from './ProcessingWarning.vue'
 import TabComponent from './TabComponent.vue'
 import ErrorMessage from './ErrorMessage.vue'
+import PlatinumAlert from './PlatinumAlert.vue'
 
 export default {
   name: 'GameSettings',
@@ -67,7 +75,8 @@ export default {
     SettingsTable,
     ProcessingWarning,
     TabComponent,
-    ErrorMessage
+    ErrorMessage,
+    PlatinumAlert
   },
   props: {
     selectedGame: {
@@ -87,6 +96,9 @@ export default {
   computed: {
     gameId() {
       return this.selectedGame ? this.selectedGame.id.toString() : ''
+    },
+    isPlatinumOrNative() {
+      return this.results && (this.results.is_platinum === true || this.results.is_native === true)
     },
     flattenedLaunchConfiguration() {
       if (!this.results || !this.results.launch_configuration) return []
