@@ -8,7 +8,7 @@ import {
   getSteamGameDetails, 
   searchExactGameName, 
   suggestSteamGames 
-} from './steamApi.js'
+} from './services/steam/steamApi.js'
 
 // Example 1: Basic search by game name
 async function basicSearch() {

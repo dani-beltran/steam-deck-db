@@ -3,7 +3,7 @@
  * Run this in the browser console to test the functions
  */
 
-import { searchSteamGamesByName } from './steamApi.js'
+import { searchSteamGamesByName } from './services/steam/steamApi.js'
 
 // Quick test function
 window.testSteamAPI = async function() {
