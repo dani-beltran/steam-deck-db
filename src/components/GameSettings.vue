@@ -14,7 +14,7 @@
 
     <!-- Results Tabs -->
     <div v-if="results && !loading" class="results-section">
-      <h2>Settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
+      <h2>Recommended settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
       
       <TabComponent 
         :tabs="settingsTabs"
