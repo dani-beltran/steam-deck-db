@@ -11,11 +11,16 @@
           @keyup.enter="searchGameByName"
           @input="onGameNameInput"
         />
-        <button @click="searchGameByName" class="search-button" :disabled="gameSearchLoading">
+        <Button 
+          @click="searchGameByName" 
+          variant="search" 
+          size="large"
+          :disabled="gameSearchLoading"
+        >
           <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -38,9 +43,13 @@
       <!-- Show More Button -->
       <transition name="show-more">
         <div v-if="hasMoreResults" class="show-more-container">
-          <button @click="showAllResults = true" class="show-more-button">
+          <Button 
+            @click="showAllResults = true" 
+            variant="primary" 
+            size="medium"
+          >
             Show More ({{ gameSearchResults.length - 5 }} more games)
-          </button>
+          </Button>
         </div>
       </transition>
     </div>
@@ -65,13 +74,15 @@ import { searchSteamGamesByName } from '../services/steam/steamApi.js'
 import ErrorMessage from './ErrorMessage.vue'
 import Spinner from './Spinner.vue'
 import GameCard from './GameCard.vue'
+import Button from './Button.vue'
 
 export default {
   name: 'GameSearch',
   components: {
     ErrorMessage,
     Spinner,
-    GameCard
+    GameCard,
+    Button
   },
   emits: ['game-selected'],
   data() {
@@ -196,25 +207,6 @@ export default {
   color: #9ca3af;
 }
 
-.search-button {
-  padding: 20px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 0 12px 12px 0;
-}
-
-.search-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.search-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
 .search-icon {
   width: 24px;
   height: 24px;
@@ -273,28 +265,6 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 20px;
-}
-
-.show-more-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.show-more-button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-}
-
-.show-more-button:active {
-  transform: translateY(0);
 }
 
 /* Show More button transition animations */
