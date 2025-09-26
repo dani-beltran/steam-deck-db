@@ -345,6 +345,7 @@ export default {
   width: 100%;
   border-collapse: collapse;
   background: white;
+  table-layout: fixed;
 }
 
 .results-table th {
@@ -356,6 +357,16 @@ export default {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.results-table th:first-child,
+.results-table td:first-child {
+  width: 40%;
+}
+
+.results-table th:nth-child(2),
+.results-table td:nth-child(2) {
+  width: 60%;
 }
 
 .results-table td {
@@ -374,13 +385,14 @@ export default {
 .property-cell {
   font-weight: 600;
   color: #374151;
-  min-width: 200px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  overflow-wrap: break-word;
 }
 
 .value-cell {
   color: #6b7280;
   word-break: break-all;
+  overflow-wrap: break-word;
 }
 
 .boolean-true {
@@ -417,8 +429,14 @@ export default {
     font-size: 0.9rem;
   }
   
-  .property-cell {
-    min-width: 150px;
+  .results-table th:first-child,
+  .results-table td:first-child {
+    width: 50%;
+  }
+
+  .results-table th:nth-child(2),
+  .results-table td:nth-child(2) {
+    width: 50%;
   }
 }
 </style>
