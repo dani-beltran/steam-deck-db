@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import nodescriptBE from '../services/nodescriptBE.js'
 
 export default {
   name: 'GameSettings',
@@ -121,23 +121,16 @@ export default {
       this.processingWarning = false
 
       try {
-        const { data: resBody } = await axios.get(`https://7vyclhz7.run.nodescript.dev/steamdeck/game-settings?gameId=${encodeURIComponent(this.selectedGame.id)}`)
-        if (resBody.status === 'pending') {
+        const result = await nodescriptBE.searchSettings(this.selectedGame.id)
+        
+        if (result.status === 'pending') {
           this.processingWarning = true
           return
         }
-        this.results = resBody.data
+        
+        this.results = result.data
       } catch (err) {
-        console.error('Error fetching game settings:', err)
-        if (err.response && err.response.status === 404) {
-          this.error = 'Game settings not found. This game may not have Steam Deck specific settings.'
-        } else if (err.response && err.response.status >= 500) {
-          this.error = 'Server error. Please try again later.'
-        } else if (err.code === 'NETWORK_ERROR') {
-          this.error = 'Network error. Please check your connection and try again.'
-        } else {
-          this.error = 'Failed to fetch game settings. Please try again.'
-        }
+        this.error = err.message
       } finally {
         this.loading = false
       }
