@@ -5,35 +5,69 @@
     </header>
     
     <main class="main-content">
+      <!-- Game Name Search Section -->
       <div class="search-section">
+        <h2 class="search-title">Search by Game Name</h2>
         <div class="search-container">
           <div class="input-wrapper">
             <input 
-              v-model="gameId" 
+              v-model="gameName" 
               type="text" 
-              placeholder="Enter game ID..." 
+              placeholder="Enter game name..." 
               class="search-input"
-              @keyup.enter="searchSettings"
+              @keyup.enter="searchGameByName"
+              @input="onGameNameInput"
             />
-            <button @click="searchSettings" class="search-button" :disabled="loading">
+            <button @click="searchGameByName" class="search-button" :disabled="gameSearchLoading">
               <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </button>
           </div>
         </div>
+
+        <!-- Game Search Results -->
+        <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results">
+          <h3>Found {{ gameSearchResults.length }} games:</h3>
+          <div class="game-grid">
+            <div 
+              v-for="game in gameSearchResults" 
+              :key="game.id"
+              class="game-card"
+              @click="selectGame(game)"
+            >
+              <img 
+                v-if="game.tiny_image || game.header_image" 
+                :src="game.tiny_image || game.header_image" 
+                :alt="game.name"
+                class="game-image"
+                @error="$event.target.style.display = 'none'"
+              />
+              <div class="game-info">
+                <h4 class="game-name">{{ game.name }}</h4>
+                <p class="game-id">ID: {{ game.id }}</p>
+                <div class="game-platforms" v-if="game.platforms">
+                  <span v-if="game.platforms.windows" class="platform">Windows</span>
+                  <span v-if="game.platforms.mac" class="platform">Mac</span>
+                  <span v-if="game.platforms.linux" class="platform">Linux</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="loading">
+      <div v-if="loading || gameSearchLoading" class="loading">
         <div class="spinner"></div>
-        <p>Searching for game settings...</p>
+        <p v-if="loading">Searching for game settings...</p>
+        <p v-if="gameSearchLoading">Searching for games...</p>
       </div>
 
       <!-- Error State -->
-      <div v-if="error" class="error">
-        <p>{{ error }}</p>
-        <button @click="error = null" class="error-dismiss">Dismiss</button>
+      <div v-if="error || gameSearchError" class="error">
+        <p>{{ error || gameSearchError }}</p>
+        <button @click="clearErrors" class="error-dismiss">Dismiss</button>
       </div>
 
       <!-- Results Table -->
@@ -78,16 +112,22 @@
 
 <script>
 import axios from 'axios'
+import { searchSteamGamesByName, getSteamGameDetails } from './steamApi.js'
 
 export default {
   name: 'App',
   data() {
     return {
       gameId: '',
+      gameName: '',
       results: null,
       loading: false,
       error: null,
-      searchPerformed: false
+      searchPerformed: false,
+      gameSearchResults: [],
+      gameSearchLoading: false,
+      gameSearchError: null,
+      selectedGame: null
     }
   },
   computed: {
@@ -97,6 +137,55 @@ export default {
     }
   },
   methods: {
+    async searchGameByName() {
+      if (!this.gameName.trim()) {
+        this.gameSearchError = 'Please enter a game name'
+        return
+      }
+
+      this.gameSearchLoading = true
+      this.gameSearchError = null
+      this.gameSearchResults = []
+
+      try {
+        const games = await searchSteamGamesByName(this.gameName.trim())
+        this.gameSearchResults = games
+        
+        if (games.length === 0) {
+          this.gameSearchError = 'No games found with that name. Try a different search term.'
+        }
+      } catch (err) {
+        console.error('Error searching for games:', err)
+        this.gameSearchError = `Failed to search for games: ${err.message}`
+      } finally {
+        this.gameSearchLoading = false
+      }
+    },
+
+    onGameNameInput() {
+      // Clear previous search results when user starts typing
+      if (this.gameSearchResults.length > 0) {
+        this.gameSearchResults = []
+      }
+      if (this.gameSearchError) {
+        this.gameSearchError = null
+      }
+    },
+
+    selectGame(game) {
+      this.selectedGame = game
+      this.gameId = game.id.toString()
+      this.gameName = game.name
+      
+      // Automatically search for settings when a game is selected
+      this.searchSettings()
+    },
+
+    clearErrors() {
+      this.error = null
+      this.gameSearchError = null
+    },
+
     async searchSettings() {
       if (!this.gameId.trim()) {
         this.error = 'Please enter a game ID'
@@ -186,7 +275,16 @@ export default {
 
 .search-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search-title {
+  color: #374151;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .search-container {
@@ -367,6 +465,104 @@ export default {
   font-size: 1.1rem;
 }
 
+/* Game Search Results Styles */
+.game-results {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 800px;
+}
+
+.game-results h3 {
+  color: #374151;
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.game-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border-color: #667eea;
+}
+
+.game-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.game-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-name {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.game-id {
+  margin: 0 0 8px 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.game-platforms {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.platform {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.platform:nth-child(1) {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.platform:nth-child(2) {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.platform:nth-child(3) {
+  background: #fef3c7;
+  color: #92400e;
+}
+
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;
@@ -388,6 +584,27 @@ export default {
   
   .property-cell {
     min-width: 150px;
+  }
+
+  .search-title {
+    font-size: 1.3rem;
+  }
+
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .game-card {
+    padding: 12px;
+  }
+
+  .game-image {
+    width: 40px;
+    height: 40px;
+  }
+
+  .game-name {
+    font-size: 0.9rem;
   }
 }
 </style>
