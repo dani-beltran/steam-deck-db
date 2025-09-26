@@ -68,6 +68,7 @@ import ProcessingWarning from './ProcessingWarning.vue'
 import TabComponent from './TabComponent.vue'
 import ErrorMessage from './ErrorMessage.vue'
 import PlatinumAlert from './PlatinumAlert.vue'
+import { flattenObject } from '../utils/objectUtils.js'
 
 export default {
   name: 'GameSettings',
@@ -102,15 +103,15 @@ export default {
     },
     flattenedLaunchConfiguration() {
       if (!this.results || !this.results.launch_configuration) return []
-      return this.flattenObject(this.results.launch_configuration)
+      return flattenObject(this.results.launch_configuration)
     },
     flattenedSteamDeckSettings() {
       if (!this.results || !this.results.steamdeck_settings) return []
-      return this.flattenObject(this.results.steamdeck_settings)
+      return flattenObject(this.results.steamdeck_settings)
     },
     flattenedGameSettings() {
       if (!this.results || !this.results.game_settings) return []
-      return this.flattenObject(this.results.game_settings)
+      return flattenObject(this.results.game_settings)
     },
     settingsTabs() {
       return [
@@ -186,27 +187,6 @@ export default {
       } finally {
         this.loading = false
       }
-    },
-
-    flattenObject(obj, parentKey = '', result = []) {
-      for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          const newKey = parentKey ? `${parentKey}.${key}` : key
-          const value = obj[key]
-          
-          if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-            // Recursively flatten nested objects
-            this.flattenObject(value, newKey, result)
-          } else {
-            // Add the key-value pair to results
-            result.push({
-              key: newKey,
-              value: Array.isArray(value) ? JSON.stringify(value) : value
-            })
-          }
-        }
-      }
-      return result
     }
   }
 }
