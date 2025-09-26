@@ -12,35 +12,104 @@
       <button @click="clearError" class="error-dismiss">Dismiss</button>
     </div>
 
-    <!-- Results Table -->
+    <!-- Results Tables -->
     <div v-if="results && !loading" class="results-section">
-      <h2>Game Settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
-      <div class="table-container">
-        <table class="results-table">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in flattenedResults" :key="row.key">
-              <td class="property-cell">{{ row.key }}</td>
-              <td class="value-cell">
-                <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
-                  {{ row.value }}
-                </span>
-                <span v-else-if="typeof row.value === 'number'" class="number-value">
-                  {{ row.value }}
-                </span>
-                <span v-else-if="row.value === null || row.value === undefined" class="null-value">
-                  null
-                </span>
-                <span v-else>{{ row.value }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <h2>Settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
+      
+      <!-- Launch Configuration Table -->
+      <div v-if="flattenedLaunchConfiguration.length > 0" class="table-section">
+        <h3>Launch Configuration</h3>
+        <div class="table-container">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in flattenedLaunchConfiguration" :key="'launch-' + row.key">
+                <td class="property-cell">{{ row.key }}</td>
+                <td class="value-cell">
+                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="typeof row.value === 'number'" class="number-value">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
+                    null
+                  </span>
+                  <span v-else>{{ row.value }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Steam Deck Settings Table -->
+      <div v-if="flattenedSteamDeckSettings.length > 0" class="table-section">
+        <h3>Steam Deck Settings</h3>
+        <div class="table-container">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in flattenedSteamDeckSettings" :key="'steamdeck-' + row.key">
+                <td class="property-cell">{{ row.key }}</td>
+                <td class="value-cell">
+                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="typeof row.value === 'number'" class="number-value">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
+                    null
+                  </span>
+                  <span v-else>{{ row.value }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Game Settings Table -->
+      <div v-if="flattenedGameSettings.length > 0" class="table-section">
+        <h3>Game Settings</h3>
+        <div class="table-container">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in flattenedGameSettings" :key="'game-' + row.key">
+                <td class="property-cell">{{ row.key }}</td>
+                <td class="value-cell">
+                  <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="typeof row.value === 'number'" class="number-value">
+                    {{ row.value }}
+                  </span>
+                  <span v-else-if="row.value === null || row.value === undefined" class="null-value">
+                    null
+                  </span>
+                  <span v-else>{{ row.value }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -84,9 +153,17 @@ export default {
     gameId() {
       return this.selectedGame ? this.selectedGame.id.toString() : ''
     },
-    flattenedResults() {
-      if (!this.results) return []
-      return this.flattenObject(this.results)
+    flattenedLaunchConfiguration() {
+      if (!this.results || !this.results.launch_configuration) return []
+      return this.flattenObject(this.results.launch_configuration)
+    },
+    flattenedSteamDeckSettings() {
+      if (!this.results || !this.results.steamdeck_settings) return []
+      return this.flattenObject(this.results.steamdeck_settings)
+    },
+    flattenedGameSettings() {
+      if (!this.results || !this.results.game_settings) return []
+      return this.flattenObject(this.results.game_settings)
     }
   },
   watch: {
@@ -128,7 +205,7 @@ export default {
           return
         }
         
-        this.results = result.data
+        this.results = result.data?.settings
       } catch (err) {
         this.error = err.message
       } finally {
@@ -243,6 +320,19 @@ export default {
   color: #374151;
   margin-bottom: 20px;
   font-size: 1.5rem;
+}
+
+.table-section {
+  margin-bottom: 32px;
+}
+
+.table-section h3 {
+  color: #4b5563;
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .table-container {
