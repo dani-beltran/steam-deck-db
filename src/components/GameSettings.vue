@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import nodescriptBE from '../services/nodescriptBE.js'
+import nodescriptBE from '../services/backend/nodescriptBE.js'
 import SettingsTable from './SettingsTable.vue'
 import ProcessingWarning from './ProcessingWarning.vue'
 import TabComponent from './TabComponent.vue'
