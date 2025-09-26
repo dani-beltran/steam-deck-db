@@ -27,6 +27,7 @@
           v-for="game in gameSearchResults" 
           :key="game.id"
           class="game-card"
+          :class="{ 'game-card-selected': selectedGameId === game.id }"
           @click="selectGame(game)"
         >
           <img 
@@ -74,7 +75,8 @@ export default {
       gameName: '',
       gameSearchResults: [],
       gameSearchLoading: false,
-      gameSearchError: null
+      gameSearchError: null,
+      selectedGameId: null
     }
   },
   methods: {
@@ -87,6 +89,7 @@ export default {
       this.gameSearchLoading = true
       this.gameSearchError = null
       this.gameSearchResults = []
+      this.selectedGameId = null
 
       try {
         const games = await searchSteamGamesByName(this.gameName.trim())
@@ -107,6 +110,7 @@ export default {
       // Clear previous search results when user starts typing
       if (this.gameSearchResults.length > 0) {
         this.gameSearchResults = []
+        this.selectedGameId = null
       }
       if (this.gameSearchError) {
         this.gameSearchError = null
@@ -115,6 +119,7 @@ export default {
 
     selectGame(game) {
       this.gameName = game.name
+      this.selectedGameId = game.id
       this.$emit('game-selected', game)
     },
 
@@ -273,6 +278,17 @@ export default {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   border-color: #667eea;
+}
+
+.game-card-selected {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2), 0 8px 25px rgba(79, 70, 229, 0.3) !important;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+}
+
+.game-card-selected:hover {
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3), 0 12px 35px rgba(79, 70, 229, 0.4) !important;
 }
 
 .game-image {
