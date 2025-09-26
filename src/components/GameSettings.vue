@@ -12,14 +12,42 @@
       <button @click="clearError" class="error-dismiss">Dismiss</button>
     </div>
 
-    <!-- Results Tables -->
+    <!-- Results Tabs -->
     <div v-if="results && !loading" class="results-section">
       <h2>Settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }}</h2>
       
-      <!-- Launch Configuration Table -->
-      <div v-if="flattenedLaunchConfiguration.length > 0" class="table-section">
-        <h3>Launch Configuration</h3>
-        <div class="table-container">
+      <!-- Tab Navigation -->
+      <div class="tab-navigation">
+        <button 
+          v-if="flattenedLaunchConfiguration.length > 0"
+          :class="['tab-button', { active: activeTab === 'launch' }]"
+          @click="activeTab = 'launch'"
+        >
+          Launch Configuration
+          <span class="tab-count">({{ flattenedLaunchConfiguration.length }})</span>
+        </button>
+        <button 
+          v-if="flattenedSteamDeckSettings.length > 0"
+          :class="['tab-button', { active: activeTab === 'steamdeck' }]"
+          @click="activeTab = 'steamdeck'"
+        >
+          Steam Deck Settings
+          <span class="tab-count">({{ flattenedSteamDeckSettings.length }})</span>
+        </button>
+        <button 
+          v-if="flattenedGameSettings.length > 0"
+          :class="['tab-button', { active: activeTab === 'game' }]"
+          @click="activeTab = 'game'"
+        >
+          Game Settings
+          <span class="tab-count">({{ flattenedGameSettings.length }})</span>
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Launch Configuration Table -->
+        <div v-if="activeTab === 'launch' && flattenedLaunchConfiguration.length > 0" class="table-container">
           <table class="results-table">
             <thead>
               <tr>
@@ -46,12 +74,9 @@
             </tbody>
           </table>
         </div>
-      </div>
 
-      <!-- Steam Deck Settings Table -->
-      <div v-if="flattenedSteamDeckSettings.length > 0" class="table-section">
-        <h3>Steam Deck Settings</h3>
-        <div class="table-container">
+        <!-- Steam Deck Settings Table -->
+        <div v-if="activeTab === 'steamdeck' && flattenedSteamDeckSettings.length > 0" class="table-container">
           <table class="results-table">
             <thead>
               <tr>
@@ -78,12 +103,9 @@
             </tbody>
           </table>
         </div>
-      </div>
 
-      <!-- Game Settings Table -->
-      <div v-if="flattenedGameSettings.length > 0" class="table-section">
-        <h3>Game Settings</h3>
-        <div class="table-container">
+        <!-- Game Settings Table -->
+        <div v-if="activeTab === 'game' && flattenedGameSettings.length > 0" class="table-container">
           <table class="results-table">
             <thead>
               <tr>
@@ -146,7 +168,8 @@ export default {
       loading: false,
       error: null,
       searchPerformed: false,
-      processingWarning: false
+      processingWarning: false,
+      activeTab: null
     }
   },
   computed: {
@@ -164,6 +187,13 @@ export default {
     flattenedGameSettings() {
       if (!this.results || !this.results.game_settings) return []
       return this.flattenObject(this.results.game_settings)
+    },
+    availableTabs() {
+      const tabs = []
+      if (this.flattenedLaunchConfiguration.length > 0) tabs.push('launch')
+      if (this.flattenedSteamDeckSettings.length > 0) tabs.push('steamdeck')
+      if (this.flattenedGameSettings.length > 0) tabs.push('game')
+      return tabs
     }
   },
   watch: {
@@ -196,6 +226,7 @@ export default {
       this.results = null
       this.searchPerformed = true
       this.processingWarning = false
+      this.activeTab = null
 
       try {
         const result = await nodescriptBE.searchSettings(this.selectedGame.id)
@@ -206,6 +237,13 @@ export default {
         }
         
         this.results = result.data?.settings
+        
+        // Set the first available tab as active
+        this.$nextTick(() => {
+          if (this.availableTabs.length > 0) {
+            this.activeTab = this.availableTabs[0]
+          }
+        })
       } catch (err) {
         this.error = err.message
       } finally {
@@ -322,17 +360,57 @@ export default {
   font-size: 1.5rem;
 }
 
-.table-section {
-  margin-bottom: 32px;
+/* Tab Navigation Styles */
+.tab-navigation {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e5e7eb;
+  gap: 4px;
 }
 
-.table-section h3 {
-  color: #4b5563;
-  margin-bottom: 16px;
-  font-size: 1.2rem;
+.tab-button {
+  background: transparent;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6b7280;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-button:hover {
+  color: #374151;
+  background: #f9fafb;
+}
+
+.tab-button.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+  background: #f8faff;
+}
+
+.tab-count {
+  background: #e5e7eb;
+  color: #6b7280;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 10px;
   font-weight: 600;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #e5e7eb;
+}
+
+.tab-button.active .tab-count {
+  background: #667eea;
+  color: white;
+}
+
+.tab-content {
+  margin-top: 20px;
 }
 
 .table-container {
@@ -423,6 +501,23 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .tab-navigation {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .tab-count {
+    font-size: 0.7rem;
+  }
+
   .results-table th,
   .results-table td {
     padding: 12px;
