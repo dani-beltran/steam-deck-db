@@ -69,18 +69,23 @@
     </div>
 
     <!-- Error State -->
-    <div v-if="gameSearchError" class="error">
-      <p>{{ gameSearchError }}</p>
-      <button @click="clearError" class="error-dismiss">Dismiss</button>
-    </div>
+    <ErrorMessage 
+      :message="gameSearchError"
+      @dismiss="clearError"
+      class="error-with-top-margin"
+    />
   </div>
 </template>
 
 <script>
 import { searchSteamGamesByName } from '../services/steam/steamApi.js'
+import ErrorMessage from './ErrorMessage.vue'
 
 export default {
   name: 'GameSearch',
+  components: {
+    ErrorMessage
+  },
   emits: ['game-selected'],
   data() {
     return {
@@ -247,25 +252,6 @@ export default {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.error {
-  background: #fee2e2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
-  padding: 16px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.error-dismiss {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 8px;
 }
 
 /* Game Search Results Styles */
@@ -478,5 +464,9 @@ export default {
   .search-input, .search-button {
     padding: 16px 20px;
   }
+}
+
+.error-with-top-margin {
+  margin-top: 20px;
 }
 </style>
