@@ -23,31 +23,43 @@
     <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results">
       <h3>Found {{ gameSearchResults.length }} games:</h3>
       <div class="game-grid">
-        <div 
-          v-for="game in gameSearchResults" 
-          :key="game.id"
-          class="game-card"
-          :class="{ 'game-card-selected': selectedGameId === game.id }"
-          @click="selectGame(game)"
-        >
-          <img 
-            v-if="game.tiny_image || game.header_image" 
-            :src="game.tiny_image || game.header_image" 
-            :alt="game.name"
-            class="game-image"
-            @error="$event.target.style.display = 'none'"
-          />
-          <div class="game-info">
-            <h4 class="game-name">{{ game.name }}</h4>
-            <p class="game-id">ID: {{ game.id }}</p>
-            <div class="game-platforms" v-if="game.platforms">
-              <span v-if="game.platforms.windows" class="platform">Windows</span>
-              <span v-if="game.platforms.mac" class="platform">Mac</span>
-              <span v-if="game.platforms.linux" class="platform">Linux</span>
+        <transition-group name="game-card" tag="div" class="game-grid-inner">
+          <div 
+            v-for="(game, index) in displayedResults" 
+            :key="game.id"
+            class="game-card"
+            :class="{ 'game-card-selected': selectedGameId === game.id }"
+            :style="{ '--animation-delay': (index >= 5 ? (index - 5) * 0.1 : 0) + 's' }"
+            @click="selectGame(game)"
+          >
+            <img 
+              v-if="game.tiny_image || game.header_image" 
+              :src="game.tiny_image || game.header_image" 
+              :alt="game.name"
+              class="game-image"
+              @error="$event.target.style.display = 'none'"
+            />
+            <div class="game-info">
+              <h4 class="game-name">{{ game.name }}</h4>
+              <p class="game-id">ID: {{ game.id }}</p>
+              <div class="game-platforms" v-if="game.platforms">
+                <span v-if="game.platforms.windows" class="platform">Windows</span>
+                <span v-if="game.platforms.mac" class="platform">Mac</span>
+                <span v-if="game.platforms.linux" class="platform">Linux</span>
+              </div>
             </div>
           </div>
-        </div>
+        </transition-group>
       </div>
+      
+      <!-- Show More Button -->
+      <transition name="show-more">
+        <div v-if="hasMoreResults" class="show-more-container">
+          <button @click="showAllResults = true" class="show-more-button">
+            Show More ({{ gameSearchResults.length - 5 }} more games)
+          </button>
+        </div>
+      </transition>
     </div>
 
     <!-- Loading State -->
@@ -76,7 +88,19 @@ export default {
       gameSearchResults: [],
       gameSearchLoading: false,
       gameSearchError: null,
-      selectedGameId: null
+      selectedGameId: null,
+      showAllResults: false
+    }
+  },
+  computed: {
+    displayedResults() {
+      if (this.showAllResults || this.gameSearchResults.length <= 5) {
+        return this.gameSearchResults
+      }
+      return this.gameSearchResults.slice(0, 6)
+    },
+    hasMoreResults() {
+      return this.gameSearchResults.length > 5 && !this.showAllResults
     }
   },
   methods: {
@@ -90,6 +114,7 @@ export default {
       this.gameSearchError = null
       this.gameSearchResults = []
       this.selectedGameId = null
+      this.showAllResults = false
 
       try {
         const games = await searchSteamGamesByName(this.gameName.trim())
@@ -111,6 +136,7 @@ export default {
       if (this.gameSearchResults.length > 0) {
         this.gameSearchResults = []
         this.selectedGameId = null
+        this.showAllResults = false
       }
       if (this.gameSearchError) {
         this.gameSearchError = null
@@ -261,6 +287,35 @@ export default {
   gap: 20px;
 }
 
+.game-grid-inner {
+  display: contents;
+}
+
+/* Animation styles for game cards */
+.game-card-enter-active {
+  transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition-delay: var(--animation-delay, 0s);
+}
+
+.game-card-enter-from {
+  opacity: 0;
+  transform: translateY(40px) scale(0.9);
+}
+
+.game-card-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.game-card-leave-active {
+  transition: all 0.3s ease;
+}
+
+.game-card-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
 .game-card {
   background: white;
   border-radius: 12px;
@@ -349,6 +404,53 @@ export default {
 .platform:nth-child(3) {
   background: #fef3c7;
   color: #92400e;
+}
+
+.show-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.show-more-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.show-more-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.show-more-button:active {
+  transform: translateY(0);
+}
+
+/* Show More button transition animations */
+.show-more-enter-active {
+  transition: all 0.4s ease;
+}
+
+.show-more-leave-active {
+  transition: all 0.3s ease;
+}
+
+.show-more-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+}
+
+.show-more-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
 }
 
 @media (max-width: 768px) {

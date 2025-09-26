@@ -44,8 +44,17 @@
       </div>
     </div>
 
+    <!-- Processing Warning -->
+    <div v-if="processingWarning" class="processing-warning">
+      <div class="warning-icon">⏳</div>
+      <h3>Settings Being Processed</h3>
+      <p>The game settings for {{ selectedGame ? selectedGame.name : `ID: ${gameId}` }} are still being processed.</p>
+      <p>Please check back in a few minutes.</p>
+      <button @click="clearProcessingWarning" class="warning-dismiss">Dismiss</button>
+    </div>
+
     <!-- No Results -->
-    <div v-if="searchPerformed && !results && !loading && !error" class="no-results">
+    <div v-if="searchPerformed && !results && !loading && !error && !processingWarning" class="no-results">
       <p>No settings found for {{ selectedGame ? selectedGame.name : `game ID: ${gameId}` }}</p>
     </div>
   </div>
@@ -67,7 +76,8 @@ export default {
       results: null,
       loading: false,
       error: null,
-      searchPerformed: false
+      searchPerformed: false,
+      processingWarning: false
     }
   },
   computed: {
@@ -94,6 +104,10 @@ export default {
       this.error = null
     },
 
+    clearProcessingWarning() {
+      this.processingWarning = false
+    },
+
     async searchSettings() {
       if (!this.selectedGame || !this.selectedGame.id) {
         this.error = 'Please select a game first'
@@ -104,10 +118,15 @@ export default {
       this.error = null
       this.results = null
       this.searchPerformed = true
+      this.processingWarning = false
 
       try {
-        const response = await axios.get(`https://7vyclhz7.run.nodescript.dev/steamdeck?gameId=${encodeURIComponent(this.selectedGame.id)}`)
-        this.results = response.data
+        const { data: resBody } = await axios.get(`https://7vyclhz7.run.nodescript.dev/steamdeck/game-settings?gameId=${encodeURIComponent(this.selectedGame.id)}`)
+        if (resBody.status === 'pending') {
+          this.processingWarning = true
+          return
+        }
+        this.results = resBody.data
       } catch (err) {
         console.error('Error fetching game settings:', err)
         if (err.response && err.response.status === 404) {
@@ -190,6 +209,41 @@ export default {
   border-radius: 4px;
   cursor: pointer;
   margin-top: 8px;
+}
+
+.processing-warning {
+  background: #fef3c7;
+  border: 1px solid #fbbf24;
+  color: #92400e;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.warning-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.processing-warning h3 {
+  color: #92400e;
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+}
+
+.processing-warning p {
+  margin: 8px 0;
+}
+
+.warning-dismiss {
+  background: #d97706;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 12px;
 }
 
 .results-section h2 {
