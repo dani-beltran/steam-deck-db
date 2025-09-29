@@ -12,7 +12,6 @@ export async function searchSteamGamesByName(gameName) {
 
   try {
     // Steam doesn't have a direct search API, so we'll use the Steam store API
-    // We'll search through the Steam spy API or use a combination approach
     
     // Method 1: Use Steam Store API search (requires CORS proxy)
     const searchUrl = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(gameName)}&l=english&cc=US`
@@ -54,63 +53,11 @@ export async function searchSteamGamesByName(gameName) {
     return []
   } catch (error) {
     console.error('Error searching Steam games:', error)
-    
-    // Fallback: Try alternative method using SteamSpy API
-    try {
-      return await searchUsingSteamSpy(gameName)
-    } catch (fallbackError) {
-      console.error('Fallback search also failed:', fallbackError)
-      throw new Error(`Failed to search for Steam games: ${error.message}`)
-    }
+    throw new Error(`Failed to search for Steam games: ${error.message}`)
   }
 }
 
-/**
- * Fallback search method using SteamSpy API
- * @param {string} gameName - The name of the game to search for
- * @returns {Promise<Array>} Array of game objects
- */
-async function searchUsingSteamSpy(gameName) {
-  try {
-    // SteamSpy has a search endpoint but it's limited
-    // We'll get all games and filter client-side (not ideal for large datasets)
-    const response = await axios.get('https://steamspy.com/api.php?request=all', {
-      timeout: 15000
-    })
 
-    if (response.data) {
-      const games = Object.entries(response.data)
-        .map(([appid, gameData]) => ({
-          id: parseInt(appid),
-          name: gameData.name,
-          developer: gameData.developer,
-          publisher: gameData.publisher,
-          owners: gameData.owners,
-          average_playtime: gameData.average_playtime,
-          median_playtime: gameData.median_playtime,
-          price: gameData.price,
-          initialprice: gameData.initialprice,
-          discount: gameData.discount,
-          languages: gameData.languages,
-          genre: gameData.genre,
-          ccu: gameData.ccu,
-          tags: gameData.tags
-        }))
-        .filter(game => 
-          game.name && 
-          game.name.toLowerCase().includes(gameName.toLowerCase())
-        )
-        .slice(0, 20) // Limit results
-
-      return games
-    }
-
-    return []
-  } catch (error) {
-    console.error('SteamSpy search failed:', error)
-    throw error
-  }
-}
 
 /**
  * Get detailed information about a specific Steam game by ID
