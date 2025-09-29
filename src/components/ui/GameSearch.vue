@@ -6,7 +6,7 @@
         v-model="gameName"
         placeholder="Enter Steam game name..."
         :loading="gameSearchLoading"
-        @search="searchGameByName"
+        @search="handleSearch"
         @input="onGameNameInput"
         @blur="hideSuggestions"
         @focus="showSuggestions = suggestions.length > 0"
@@ -120,7 +120,11 @@ export default {
     }
   },
   methods: {
-    async searchGameByName() {
+    async handleSearch() {
+      this.closeSuggestions()
+      this.searchGameByName()
+    },
+    async searchGameByName(fromSuggestion = false) {
       if (!this.gameName.trim()) {
         this.gameSearchError = 'Please enter a game name'
         return
@@ -138,6 +142,9 @@ export default {
         
         if (games.length === 0) {
           this.gameSearchError = 'No games found with that name. Try a different search term.'
+        } else if (fromSuggestion && games.length > 0) {
+          // Automatically select the first game when search comes from suggestion
+          this.selectGameCard(games[0])
         }
       } catch (err) {
         console.error('Error searching for games:', err)
@@ -207,11 +214,9 @@ export default {
 
     selectSuggestion(suggestion) {
       this.gameName = suggestion.name
-      this.suggestions = []
-      this.showSuggestions = false
-      this.selectedSuggestionIndex = -1
+      this.closeSuggestions()
       // Trigger search immediately when suggestion is selected
-      this.searchGameByName()
+      this.searchGameByName(true) // Pass flag to indicate this is from suggestion
     },
 
     closeSuggestions() {
