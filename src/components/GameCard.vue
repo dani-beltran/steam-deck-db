@@ -57,6 +57,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .game-card:hover {
@@ -87,6 +92,7 @@ export default {
 .game-info {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .game-name {
@@ -94,9 +100,17 @@ export default {
   font-size: 1rem;
   font-weight: 600;
   color: #1f2937;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.3;
+  max-height: 2.6em;
 }
 
 .game-id {
@@ -104,12 +118,18 @@ export default {
   font-size: 0.875rem;
   color: #6b7280;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .game-platforms {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .platform {
