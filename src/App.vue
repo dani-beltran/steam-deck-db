@@ -1,28 +1,34 @@
 <template>
-  <div class="container">
-    <header class="header">
-      <h1 class="title">SteamDeck game settings DB</h1>
-    </header>
-    
-    <main class="main-content">
-      <!-- Game Name Search Section -->
-      <GameSearch @game-selected="onGameSelected" />
+  <div class="app-layout">
+    <div class="container">
+      <header class="header">
+        <h1 class="title">SteamDeck game settings DB</h1>
+      </header>
+      
+      <main class="main-content">
+        <!-- Game Name Search Section -->
+        <GameSearch @game-selected="onGameSelected" />
 
-      <!-- Game Settings Section -->
-      <GameSettings ref="gameSettings" :selected-game="selectedGame" />
-    </main>
+        <!-- Game Settings Section -->
+        <GameSettings ref="gameSettings" :selected-game="selectedGame" />
+      </main>
+    </div>
+    <!-- Footer Section -->
+    <Footer />
   </div>
 </template>
 
 <script>
 import GameSearch from './components/ui/GameSearch.vue'
 import GameSettings from './components/ui/GameSettings.vue'
+import Footer from './components/common/Footer.vue'
 
 export default {
   name: 'App',
   components: {
     GameSearch,
-    GameSettings
+    GameSettings,
+    Footer
   },
   data() {
     return {
@@ -50,11 +56,14 @@ export default {
 </script>
 
 <style scoped>
-* {
-  box-sizing: border-box;
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .container {
+  flex: 1;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
@@ -91,5 +100,4 @@ export default {
   .container {
     padding: 16px;
   }
-}
-</style>
+}</style>
