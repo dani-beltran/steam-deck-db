@@ -8,6 +8,12 @@
         :class="['tab-button', { active: activeTab === tab.id }]"
         @click="setActiveTab(tab.id)"
       >
+        <component 
+          v-if="tab.icon" 
+          :is="tab.icon" 
+          :size="18" 
+          class="tab-icon"
+        />
         {{ tab.label }}
         <span v-if="tab.count !== undefined" class="tab-count">({{ tab.count }})</span>
       </button>
@@ -113,6 +119,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.tab-icon {
+  flex-shrink: 0;
 }
 
 .tab-button:hover {

@@ -70,6 +70,7 @@ import ErrorMessage from './ErrorMessage.vue'
 import PlatinumAlert from './PlatinumAlert.vue'
 import Spinner from './Spinner.vue'
 import { flattenObject } from '../utils/objectUtils.js'
+import { Gamepad2, Rocket, Monitor } from 'lucide-vue-next'
 
 export default {
   name: 'GameSettings',
@@ -120,18 +121,21 @@ export default {
         {
           id: 'game',
           label: 'Game Settings',
+          icon: Gamepad2,
           count: this.flattenedGameSettings.length,
           hidden: this.flattenedGameSettings.length === 0
         },
         {
           id: 'launch',
           label: 'Launch Configuration',
+          icon: Rocket,
           count: this.flattenedLaunchConfiguration.length,
           hidden: this.flattenedLaunchConfiguration.length === 0
         },
         {
           id: 'steamdeck',
           label: 'Steam Deck Settings',
+          icon: Monitor,
           count: this.flattenedSteamDeckSettings.length,
           hidden: this.flattenedSteamDeckSettings.length === 0
         }
