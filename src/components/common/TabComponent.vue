@@ -20,13 +20,36 @@
     </div>
 
     <!-- Tab Content -->
-    <div class="tab-content">
-      <slot :activeTab="activeTab"></slot>
+    <div 
+      class="tab-content-container"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
+      @touchend="onTouchEnd"
+      @mousedown="onMouseDown"
+      @mousemove="onMouseMove"
+      @mouseup="onMouseEnd"
+      @mouseleave="onMouseEnd"
+    >
+      <div 
+        class="tab-content-wrapper"
+        :style="{ transform: `translateX(${swipeState.translateX}px)` }"
+        :class="{ 
+          'transitioning': swipeState.isTransitioning,
+          'hidden': !isContentVisible 
+        }"
+      >
+        <div class="tab-content-panel active">
+          <slot :activeTab="activeTab"></slot>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, computed, watch } from 'vue'
+import { useSwipe } from '../../composables/swipe/useSwipe.js'
+
 export default {
   name: 'TabComponent',
   props: {
@@ -45,48 +68,151 @@ export default {
       default: null
     }
   },
-  data() {
-    return {
-      activeTab: null
-    }
-  },
-  computed: {
-    availableTabs() {
-      return this.tabs.filter(tab => !tab.hidden && (tab.count === undefined || tab.count > 0))
-    }
-  },
-  watch: {
-    tabs: {
-      handler() {
-        this.initializeActiveTab()
-      },
-      immediate: true,
-      deep: true
-    },
-    defaultTab: {
-      handler() {
-        this.initializeActiveTab()
-      }
-    }
-  },
-  methods: {
-    initializeActiveTab() {
+  emits: ['tab-changed'],
+  setup(props, { emit }) {
+    // Component state
+    const activeTab = ref(null)
+    const isContentVisible = ref(true)
+    
+    // Computed properties
+    const availableTabs = computed(() => {
+      return props.tabs.filter(tab => !tab.hidden && (tab.count === undefined || tab.count > 0))
+    })
+    
+    const currentTabIndex = computed(() => {
+      return availableTabs.value.findIndex(tab => tab.id === activeTab.value)
+    })
+    
+    // Initialize swipe composable
+    const animationDuration = 400
+    const {
+      swipeState,
+      resetSwipeState,
+      animateToPosition,
+      resetPosition,
+      handleTouchStart,
+      handleTouchMove,
+      handleTouchEnd,
+      handleMouseDown,
+      handleMouseMove,
+      handleMouseEnd
+    } = useSwipe({
+      swipeThreshold: 50,
+      velocityThreshold: 0.3,
+      maxDragDistance: 0.25,
+      edgeResistance: 0.2,
+      animationDuration
+    })
+    
+    // Tab management methods
+    const initializeActiveTab = () => {
       // Use the provided default tab if it exists and is available
-      if (this.defaultTab && this.availableTabs.some(tab => tab.id === this.defaultTab)) {
-        this.activeTab = this.defaultTab
+      if (props.defaultTab && availableTabs.value.some(tab => tab.id === props.defaultTab)) {
+        activeTab.value = props.defaultTab
         return
       }
       
       // Otherwise, use the first available tab
-      if (this.availableTabs.length > 0) {
-        this.activeTab = this.availableTabs[0].id
+      if (availableTabs.value.length > 0) {
+        activeTab.value = availableTabs.value[0].id
       } else {
-        this.activeTab = null
+        activeTab.value = null
       }
-    },
-    setActiveTab(tabId) {
-      this.activeTab = tabId
-      this.$emit('tab-changed', tabId)
+    }
+    
+    const setActiveTab = (tabId) => {
+      if (swipeState.isDragging || swipeState.isTransitioning) return
+      
+      resetSwipeState()
+      isContentVisible.value = true // Ensure content is visible when clicking tabs
+      activeTab.value = tabId
+      emit('tab-changed', tabId)
+    }
+    
+    // Animation methods
+    const animateToTab = (tabIndex) => {
+      const newTab = availableTabs.value[tabIndex]
+      const currentIndex = currentTabIndex.value
+      
+      animateToPosition(() => {
+        // Animate slide out
+        if (tabIndex > currentIndex) {
+          swipeState.translateX = -window.innerWidth * 1
+        } else {
+          swipeState.translateX = window.innerWidth * 1
+        }
+        
+        // After sliding out, change tab and slide back in
+        setTimeout(() => {
+          isContentVisible.value = false
+          swipeState.translateX = 0
+          activeTab.value = newTab.id
+          emit('tab-changed', newTab.id)
+        }, animationDuration / 2)
+
+        // Show content after sliding in and chaging tab
+        setTimeout(() => {
+          isContentVisible.value = true
+        }, animationDuration)
+      })
+    }
+    
+    // Swipe event handlers
+    const onTouchStart = (e) => {
+      handleTouchStart(e)
+    }
+    
+    const onTouchMove = (e) => {
+      handleTouchMove(e, currentTabIndex.value, availableTabs.value.length)
+    }
+    
+    const onTouchEnd = (e) => {
+      const result = handleTouchEnd(currentTabIndex.value, availableTabs.value.length)
+      handleSwipeResult(result)
+    }
+    
+    const onMouseDown = (e) => {
+      handleMouseDown(e)
+    }
+    
+    const onMouseMove = (e) => {
+      handleMouseMove(e, currentTabIndex.value, availableTabs.value.length)
+    }
+    
+    const onMouseEnd = (e) => {
+      const result = handleMouseEnd(currentTabIndex.value, availableTabs.value.length)
+      handleSwipeResult(result)
+    }
+    
+    const handleSwipeResult = (result) => {
+      if (!result) return
+      if (result.type === 'change') {
+        animateToTab(result.newIndex)
+      } else if (result.type === 'reset') {
+        resetPosition()
+      }
+    }
+    
+    // Watchers
+    watch([() => props.tabs, () => props.defaultTab], () => {
+      initializeActiveTab()
+    }, { immediate: true, deep: true })
+    
+    return {
+      // State
+      activeTab,
+      availableTabs,
+      swipeState,
+      isContentVisible,
+      
+      // Methods
+      setActiveTab,
+      onTouchStart,
+      onTouchMove,
+      onTouchEnd,
+      onMouseDown,
+      onMouseMove,
+      onMouseEnd
     }
   }
 }
@@ -150,8 +276,43 @@ export default {
   color: white;
 }
 
-.tab-content {
+.tab-content-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  touch-action: pan-y; /* Allow vertical scrolling but handle horizontal swipes */
   margin-top: 20px;
+  user-select: none; /* Prevent text selection during swipe */
+}
+
+.tab-content-wrapper {
+  width: 100%;
+  transition: opacity .4s ease;
+  opacity: 1;
+  will-change: transform;
+  cursor: grab;
+}
+
+.tab-content-wrapper:active {
+  cursor: grabbing;
+}
+
+.tab-content-wrapper.transitioning {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+}
+
+.tab-content-wrapper.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tab-content-panel {
+  width: 100%;
+}
+
+.tab-content-panel.active {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
