@@ -1,0 +1,190 @@
+<template>
+  <div v-if="show && suggestions.length > 0" class="suggestions-dropdown">
+    <div class="suggestions-header">
+      <span class="suggestions-title">{{ title }}</span>
+      <span v-if="loading" class="suggestions-loading">Loading...</span>
+    </div>
+    <ul class="suggestions-list" role="listbox">
+      <li 
+        v-for="(suggestion, index) in suggestions" 
+        :key="suggestion.id"
+        :class="['suggestion-item', { 'selected': index === selectedIndex }]"
+        @click="selectSuggestion(suggestion, index)"
+        @mouseenter="updateSelectedIndex(index)"
+        role="option"
+        :aria-selected="index === selectedIndex"
+      >
+        <div class="suggestion-content">
+          <img 
+            v-if="suggestion.tiny_image" 
+            :src="suggestion.tiny_image" 
+            :alt="suggestion.name"
+            class="suggestion-image"
+            loading="lazy"
+          />
+          <div class="suggestion-text">
+            <div class="suggestion-name">{{ suggestion.name }}</div>
+            <div v-if="suggestion.release_date" class="suggestion-meta">
+              {{ suggestion.release_date.date || suggestion.release_date }}
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'SearchSuggestions',
+  props: {
+    suggestions: {
+      type: Array,
+      default: () => []
+    },
+    show: {
+      type: Boolean,
+      default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    selectedIndex: {
+      type: Number,
+      default: -1
+    },
+    title: {
+      type: String,
+      default: 'Suggestions'
+    }
+  },
+  emits: ['select-suggestion', 'update-selected-index'],
+  methods: {
+    selectSuggestion(suggestion, index) {
+      this.$emit('select-suggestion', suggestion, index)
+    },
+    
+    updateSelectedIndex(index) {
+      this.$emit('update-selected-index', index)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.suggestions-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  background: #f9fafb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.suggestions-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggestions-loading {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.suggestions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+  background-color: #f3f4f6;
+}
+
+.suggestion-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.suggestion-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.suggestion-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-name {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-meta {
+  font-size: 0.75rem;
+  color: #6b7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .suggestions-dropdown {
+    max-height: 300px;
+  }
+  
+  .suggestion-item {
+    padding: 16px;
+  }
+  
+  .suggestion-content {
+    gap: 8px;
+  }
+  
+  .suggestion-image {
+    width: 28px;
+    height: 28px;
+  }
+}
+</style>

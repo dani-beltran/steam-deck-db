@@ -8,6 +8,9 @@
         class="search-input"
         @keyup.enter="handleSearch"
         @input="handleInput"
+        @keydown="handleKeyDown"
+        @blur="handleBlur"
+        @focus="handleFocus"
         autocomplete="off"
         spellcheck="false"
         :aria-label="loading ? 'Searching...' : 'Enter search term'"
@@ -49,7 +52,7 @@ export default {
       default: false
     }
   },
-  emits: ['update:modelValue', 'search', 'input'],
+  emits: ['update:modelValue', 'search', 'input', 'keydown', 'blur', 'focus'],
   computed: {
     searchTerm: {
       get() {
@@ -67,6 +70,18 @@ export default {
     
     handleInput() {
       this.$emit('input', this.searchTerm)
+    },
+    
+    handleKeyDown(event) {
+      this.$emit('keydown', event)
+    },
+    
+    handleBlur(event) {
+      this.$emit('blur', event)
+    },
+    
+    handleFocus(event) {
+      this.$emit('focus', event)
     }
   }
 }

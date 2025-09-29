@@ -1,14 +1,30 @@
 <template>
   <div class="search-section">
     <h2 class="search-title">Search by game</h2>
-    <SearchBar
-      v-model="gameName"
-      placeholder="Enter Steam game name..."
-      :loading="gameSearchLoading"
-      @search="searchGameByName"
-      @input="onGameNameInput"
-      aria-label="Search for Steam Deck game settings"
-    />
+    <div class="search-wrapper">
+      <SearchBar
+        v-model="gameName"
+        placeholder="Enter Steam game name..."
+        :loading="gameSearchLoading"
+        @search="searchGameByName"
+        @input="onGameNameInput"
+        @keydown="handleKeyDown"
+        @blur="hideSuggestions"
+        @focus="showSuggestions = suggestions.length > 0"
+        aria-label="Search for Steam Deck game settings"
+      />
+      
+      <!-- Suggestions Dropdown -->
+      <SearchSuggestions
+        :suggestions="suggestions"
+        :show="showSuggestions"
+        :loading="suggestionsLoading"
+        :selected-index="selectedSuggestionIndex"
+        title="Game Suggestions"
+        @select-suggestion="selectSuggestion"
+        @update-selected-index="selectedSuggestionIndex = $event"
+      />
+    </div>
 
     <!-- Game Search Results -->
     <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results" role="region" aria-label="Search results">
@@ -57,12 +73,13 @@
 </template>
 
 <script>
-import { searchSteamGamesByName } from '../../services/steam/steamApi.js'
+import { searchSteamGamesByName, suggestSteamGames } from '../../services/steam/steamApi.js'
 import ErrorMessage from '../common/ErrorMessage.vue'
 import Spinner from '../base/Spinner.vue'
 import GameCard from './GameCard.vue'
 import Button from '../base/Button.vue'
 import SearchBar from '../common/SearchBar.vue'
+import SearchSuggestions from '../common/SearchSuggestions.vue'
 
 export default {
   name: 'GameSearch',
@@ -71,7 +88,8 @@ export default {
     Spinner,
     GameCard,
     Button,
-    SearchBar
+    SearchBar,
+    SearchSuggestions
   },
   emits: ['game-selected'],
   data() {
@@ -82,7 +100,12 @@ export default {
       gameSearchError: null,
       selectedGameId: null,
       showAllResults: false,
-      INITIAL_RESULTS_COUNT: 6
+      INITIAL_RESULTS_COUNT: 4,
+      suggestions: [],
+      suggestionsLoading: false,
+      showSuggestions: false,
+      selectedSuggestionIndex: -1,
+      debounceTimer: null
     }
   },
   computed: {
@@ -134,6 +157,103 @@ export default {
       if (this.gameSearchError) {
         this.gameSearchError = null
       }
+      
+      // Trigger suggestions with debouncing
+      this.debouncedFetchSuggestions()
+    },
+
+    debouncedFetchSuggestions() {
+      // Clear existing timer
+      if (this.debounceTimer) {
+        clearTimeout(this.debounceTimer)
+      }
+      
+      // If input is empty, hide suggestions
+      if (!this.gameName.trim()) {
+        this.suggestions = []
+        this.showSuggestions = false
+        this.selectedSuggestionIndex = -1
+        return
+      }
+      
+      // Set new timer for 300ms delay
+      this.debounceTimer = setTimeout(() => {
+        this.fetchSuggestions()
+      }, 300)
+    },
+
+    async fetchSuggestions() {
+      if (!this.gameName.trim() || this.gameName.trim().length < 2) {
+        this.suggestions = []
+        this.showSuggestions = false
+        return
+      }
+
+      this.suggestionsLoading = true
+      
+      try {
+        const suggestions = await suggestSteamGames(this.gameName.trim(), 8)
+        this.suggestions = suggestions
+        this.showSuggestions = suggestions.length > 0
+        this.selectedSuggestionIndex = -1
+      } catch (error) {
+        console.error('Error fetching suggestions:', error)
+        this.suggestions = []
+        this.showSuggestions = false
+      } finally {
+        this.suggestionsLoading = false
+      }
+    },
+
+    selectSuggestion(suggestion) {
+      this.gameName = suggestion.name
+      this.suggestions = []
+      this.showSuggestions = false
+      this.selectedSuggestionIndex = -1
+      // Trigger search immediately when suggestion is selected
+      this.searchGameByName()
+    },
+
+    handleKeyDown(event) {
+      if (!this.showSuggestions || this.suggestions.length === 0) return
+      
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault()
+          this.selectedSuggestionIndex = Math.min(
+            this.selectedSuggestionIndex + 1,
+            this.suggestions.length - 1
+          )
+          break
+        case 'ArrowUp':
+          event.preventDefault()
+          this.selectedSuggestionIndex = Math.max(
+            this.selectedSuggestionIndex - 1,
+            -1
+          )
+          break
+        case 'Enter':
+          event.preventDefault()
+          if (this.selectedSuggestionIndex >= 0) {
+            this.selectSuggestion(this.suggestions[this.selectedSuggestionIndex])
+          } else {
+            this.searchGameByName()
+          }
+          break
+        case 'Escape':
+          this.suggestions = []
+          this.showSuggestions = false
+          this.selectedSuggestionIndex = -1
+          break
+      }
+    },
+
+    hideSuggestions() {
+      // Add a small delay to allow for suggestion clicks
+      setTimeout(() => {
+        this.showSuggestions = false
+        this.selectedSuggestionIndex = -1
+      }, 150)
     },
 
     selectGame(game) {
@@ -144,6 +264,12 @@ export default {
 
     clearError() {
       this.gameSearchError = null
+    }
+  },
+  beforeUnmount() {
+    // Clean up debounce timer
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer)
     }
   }
 }
@@ -164,7 +290,11 @@ export default {
   font-weight: 600;
 }
 
-
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
 
 /* Game Search Results Styles */
 .game-results {
@@ -247,8 +377,6 @@ export default {
   .game-grid {
     grid-template-columns: 1fr;
   }
-
-
 }
 
 .error-with-top-margin {
