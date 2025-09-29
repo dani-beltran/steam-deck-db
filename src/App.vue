@@ -9,7 +9,7 @@
       <GameSearch @game-selected="onGameSelected" />
 
       <!-- Game Settings Section -->
-      <GameSettings :selected-game="selectedGame" />
+      <GameSettings ref="gameSettings" :selected-game="selectedGame" />
     </main>
   </div>
 </template>
@@ -32,6 +32,18 @@ export default {
   methods: {
     onGameSelected(game) {
       this.selectedGame = game
+      
+      // Scroll to GameSettings component after a short delay to ensure it's rendered
+      this.$nextTick(() => {
+        setTimeout(() => {
+          if (this.$refs.gameSettings && this.$refs.gameSettings.$el) {
+            this.$refs.gameSettings.$el.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            })
+          }
+        }, 100)
+      })
     }
   }
 }
