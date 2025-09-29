@@ -6,7 +6,6 @@
         type="text" 
         :placeholder="placeholder" 
         class="search-input"
-        @keyup.enter="handleSearch"
         @input="handleInput"
         @keydown="handleKeyDown"
         @blur="handleBlur"

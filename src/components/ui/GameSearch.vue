@@ -10,6 +10,7 @@
         @input="onGameNameInput"
         @blur="hideSuggestions"
         @focus="showSuggestions = suggestions.length > 0"
+        @keydown="handleSearchBarKeydown"
         aria-label="Search for Steam Deck game settings"
       />
       
@@ -121,8 +122,16 @@ export default {
   },
   methods: {
     async handleSearch() {
+      clearTimeout(this.debounceTimer)
       this.closeSuggestions()
       this.searchGameByName()
+    },
+    async handleSearchBarKeydown(event) {
+      if (event.key === 'Enter') {
+        if (this.selectedSuggestionIndex === -1) {
+          this.handleSearch()
+        }
+      }
     },
     async searchGameByName(fromSuggestion = false) {
       if (!this.gameName.trim()) {
@@ -212,11 +221,10 @@ export default {
       }
     },
 
-    selectSuggestion(suggestion) {
+    async selectSuggestion(suggestion) {
       this.gameName = suggestion.name
       this.closeSuggestions()
-      // Trigger search immediately when suggestion is selected
-      this.searchGameByName(true) // Pass flag to indicate this is from suggestion
+      await this.searchGameByName(true) // Pass flag to indicate this is from suggestion item
     },
 
     closeSuggestions() {
