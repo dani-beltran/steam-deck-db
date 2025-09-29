@@ -44,14 +44,19 @@ export default {
     onGameSelected(game) {
       this.selectedGame = game
       
-      // Scroll to GameSettings component after a short delay to ensure it's rendered
+      // Only scroll to GameSettings component on narrow devices (mobile/tablet)
       this.$nextTick(() => {
         setTimeout(() => {
           if (this.$refs.gameSettings && this.$refs.gameSettings.$el) {
-            this.$refs.gameSettings.$el.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            })
+            // Check if the screen width is narrow (768px or less)
+            const isNarrowDevice = window.innerWidth <= 768
+            
+            if (isNarrowDevice) {
+              this.$refs.gameSettings.$el.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              })
+            }
           }
         }, 100)
       })
