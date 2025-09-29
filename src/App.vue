@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import GameSearch from './components/GameSearch.vue'
-import GameSettings from './components/GameSettings.vue'
+import GameSearch from './components/ui/GameSearch.vue'
+import GameSettings from './components/ui/GameSettings.vue'
 
 export default {
   name: 'App',

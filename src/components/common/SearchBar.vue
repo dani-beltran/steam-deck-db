@@ -23,7 +23,7 @@
 
 <script>
 import { Search } from 'lucide-vue-next'
-import Button from './Button.vue'
+import Button from '../base/Button.vue'
 
 export default {
   name: 'SearchBar',

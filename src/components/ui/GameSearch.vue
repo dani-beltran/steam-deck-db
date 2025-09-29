@@ -55,12 +55,12 @@
 </template>
 
 <script>
-import { searchSteamGamesByName } from '../services/steam/steamApi.js'
-import ErrorMessage from './ErrorMessage.vue'
-import Spinner from './Spinner.vue'
+import { searchSteamGamesByName } from '../../services/steam/steamApi.js'
+import ErrorMessage from '../common/ErrorMessage.vue'
+import Spinner from '../base/Spinner.vue'
 import GameCard from './GameCard.vue'
-import Button from './Button.vue'
-import SearchBar from './SearchBar.vue'
+import Button from '../base/Button.vue'
+import SearchBar from '../common/SearchBar.vue'
 
 export default {
   name: 'GameSearch',

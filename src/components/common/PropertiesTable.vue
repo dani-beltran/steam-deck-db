@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <table class="results-table">
+    <table class="properties-table">
       <thead>
         <tr>
           <th>Property</th>
@@ -30,7 +30,7 @@
 
 <script>
 export default {
-  name: 'SettingsTable',
+  name: 'PropertiesTable',
   props: {
     data: {
       type: Array,
@@ -52,14 +52,14 @@ export default {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.results-table {
+.properties-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
   table-layout: fixed;
 }
 
-.results-table th {
+.properties-table th {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 16px;
@@ -70,26 +70,26 @@ export default {
   letter-spacing: 0.05em;
 }
 
-.results-table th:first-child,
-.results-table td:first-child {
+.properties-table th:first-child,
+.properties-table td:first-child {
   width: 40%;
 }
 
-.results-table th:nth-child(2),
-.results-table td:nth-child(2) {
+.properties-table th:nth-child(2),
+.properties-table td:nth-child(2) {
   width: 60%;
 }
 
-.results-table td {
+.properties-table td {
   padding: 16px;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.results-table tr:nth-child(even) {
+.properties-table tr:nth-child(even) {
   background: #f9fafb;
 }
 
-.results-table tr:hover {
+.properties-table tr:hover {
   background: #f3f4f6;
 }
 
@@ -127,19 +127,19 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .results-table th,
-  .results-table td {
+  .properties-table th,
+  .properties-table td {
     padding: 12px;
     font-size: 0.9rem;
   }
   
-  .results-table th:first-child,
-  .results-table td:first-child {
+  .properties-table th:first-child,
+  .properties-table td:first-child {
     width: 50%;
   }
 
-  .results-table th:nth-child(2),
-  .results-table td:nth-child(2) {
+  .properties-table th:nth-child(2),
+  .properties-table td:nth-child(2) {
     width: 50%;
   }
 }

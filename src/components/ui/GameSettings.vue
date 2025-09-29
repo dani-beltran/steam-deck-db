@@ -31,17 +31,17 @@
         <template #default="{ activeTab }">
           <!-- Game Settings Table -->
           <div v-if="activeTab === 'game' && flattenedGameSettings.length > 0">
-            <SettingsTable :data="flattenedGameSettings" key-prefix="game" />
+            <PropertiesTable :data="flattenedGameSettings" key-prefix="game" />
           </div>
           
           <!-- Launch Configuration Table -->
           <div v-if="activeTab === 'launch' && flattenedLaunchConfiguration.length > 0">
-            <SettingsTable :data="flattenedLaunchConfiguration" key-prefix="launch" />
+            <PropertiesTable :data="flattenedLaunchConfiguration" key-prefix="launch" />
           </div>
 
           <!-- Steam Deck Settings Table -->
           <div v-if="activeTab === 'steamdeck' && flattenedSteamDeckSettings.length > 0">
-            <SettingsTable :data="flattenedSteamDeckSettings" key-prefix="steamdeck" />
+            <PropertiesTable :data="flattenedSteamDeckSettings" key-prefix="steamdeck" />
           </div>
         </template>
       </TabComponent>
@@ -62,20 +62,20 @@
 </template>
 
 <script>
-import nodescriptBE from '../services/backend/nodescriptBE.js'
-import SettingsTable from './SettingsTable.vue'
+import nodescriptBE from '../../services/backend/nodescriptBE.js'
+import PropertiesTable from '../common/PropertiesTable.vue'
 import ProcessingWarning from './ProcessingWarning.vue'
-import TabComponent from './TabComponent.vue'
-import ErrorMessage from './ErrorMessage.vue'
+import TabComponent from '../common/TabComponent.vue'
+import ErrorMessage from '../common/ErrorMessage.vue'
 import PlatinumAlert from './PlatinumAlert.vue'
-import Spinner from './Spinner.vue'
-import { flattenObject } from '../utils/objectUtils.js'
+import Spinner from '../base/Spinner.vue'
+import { flattenObject } from '../../utils/objectUtils.js'
 import { Gamepad2, Rocket, Monitor } from 'lucide-vue-next'
 
 export default {
   name: 'GameSettings',
   components: {
-    SettingsTable,
+    PropertiesTable,
     ProcessingWarning,
     TabComponent,
     ErrorMessage,
