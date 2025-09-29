@@ -133,7 +133,7 @@ export default {
         }
       }
     },
-    async searchGameByName(fromSuggestion = false) {
+    async searchGameByName() {
       if (!this.gameName.trim()) {
         this.gameSearchError = 'Please enter a game name'
         return
@@ -151,9 +151,6 @@ export default {
         
         if (games.length === 0) {
           this.gameSearchError = 'No games found with that name. Try a different search term.'
-        } else if (fromSuggestion && games.length > 0) {
-          // Automatically select the first game when search comes from suggestion
-          this.selectGameCard(games[0])
         }
       } catch (err) {
         console.error('Error searching for games:', err)
@@ -224,7 +221,8 @@ export default {
     async selectSuggestion(suggestion) {
       this.gameName = suggestion.name
       this.closeSuggestions()
-      await this.searchGameByName(true) // Pass flag to indicate this is from suggestion item
+      await this.searchGameByName()
+      this.selectGameCard(suggestion)
     },
 
     closeSuggestions() {
