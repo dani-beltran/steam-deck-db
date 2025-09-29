@@ -1,26 +1,13 @@
 <template>
   <div class="search-section">
     <h2 class="search-title">Search by Game Name</h2>
-    <div class="search-container">
-      <div class="input-wrapper">
-        <input 
-          v-model="gameName" 
-          type="text" 
-          placeholder="Enter game name..." 
-          class="search-input"
-          @keyup.enter="searchGameByName"
-          @input="onGameNameInput"
-        />
-        <Button 
-          @click="searchGameByName" 
-          variant="search" 
-          size="large"
-          :disabled="gameSearchLoading"
-        >
-          <Search class="search-icon" />
-        </Button>
-      </div>
-    </div>
+    <SearchBar
+      v-model="gameName"
+      placeholder="Enter game name..."
+      :loading="gameSearchLoading"
+      @search="searchGameByName"
+      @input="onGameNameInput"
+    />
 
     <!-- Game Search Results -->
     <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results">
@@ -69,11 +56,11 @@
 
 <script>
 import { searchSteamGamesByName } from '../services/steam/steamApi.js'
-import { Search } from 'lucide-vue-next'
 import ErrorMessage from './ErrorMessage.vue'
 import Spinner from './Spinner.vue'
 import GameCard from './GameCard.vue'
 import Button from './Button.vue'
+import SearchBar from './SearchBar.vue'
 
 export default {
   name: 'GameSearch',
@@ -82,7 +69,7 @@ export default {
     Spinner,
     GameCard,
     Button,
-    Search
+    SearchBar
   },
   emits: ['game-selected'],
   data() {
@@ -174,44 +161,7 @@ export default {
   font-weight: 600;
 }
 
-.search-container {
-  width: 100%;
-  max-width: 600px;
-}
 
-.input-wrapper {
-  display: flex;
-  position: relative;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.search-input {
-  flex: 1;
-  padding: 20px 24px;
-  border: 2px solid #e5e7eb;
-  font-size: 1.1rem;
-  outline: none;
-  transition: all 0.2s ease;
-  border-radius: 12px 0 0 12px;
-  border-right: none;
-}
-
-.search-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.search-input::placeholder {
-  color: #9ca3af;
-}
-
-.search-icon {
-  width: 24px;
-  height: 24px;
-  color: white;
-}
 
 /* Game Search Results Styles */
 .game-results {
@@ -295,9 +245,7 @@ export default {
     grid-template-columns: 1fr;
   }
 
-  .search-input, .search-button {
-    padding: 16px 20px;
-  }
+
 }
 
 .error-with-top-margin {
