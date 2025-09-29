@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <h1 class="title">SteamDeck Unofficial DB</h1>
-    <p class="subtitle">The place to find the best settings to play your games optimally in the Deck</p>
+    <p class="subtitle">The definitive Steam Deck settings database! Optimize every game for best performance.</p>
   </header>
 </template>
 
