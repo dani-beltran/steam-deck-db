@@ -19,7 +19,7 @@
             :key="game.id"
             :game="game"
             :is-selected="selectedGameId === game.id"
-            :animation-delay="index >= 5 ? (index - 5) * 0.1 : 0"
+            :animation-delay="index >= this.INITIAL_RESULTS_COUNT ? (index - this.INITIAL_RESULTS_COUNT) * 0.1 : 0"
             @select="selectGame"
           />
         </transition-group>
@@ -33,7 +33,7 @@
             variant="primary" 
             size="medium"
           >
-            Show More ({{ gameSearchResults.length - 5 }} more games)
+            Show More ({{ gameSearchResults.length - this.INITIAL_RESULTS_COUNT }} more games)
           </Button>
         </div>
       </transition>
@@ -79,18 +79,19 @@ export default {
       gameSearchLoading: false,
       gameSearchError: null,
       selectedGameId: null,
-      showAllResults: false
+      showAllResults: false,
+      INITIAL_RESULTS_COUNT: 6
     }
   },
   computed: {
     displayedResults() {
-      if (this.showAllResults || this.gameSearchResults.length <= 5) {
+      if (this.showAllResults || this.gameSearchResults.length <= this.INITIAL_RESULTS_COUNT) {
         return this.gameSearchResults
       }
-      return this.gameSearchResults.slice(0, 5)
+      return this.gameSearchResults.slice(0, this.INITIAL_RESULTS_COUNT)
     },
     hasMoreResults() {
-      return this.gameSearchResults.length > 5 && !this.showAllResults
+      return this.gameSearchResults.length > this.INITIAL_RESULTS_COUNT && !this.showAllResults
     }
   },
   methods: {
