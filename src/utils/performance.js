@@ -82,8 +82,10 @@ function initPerformanceMonitoring() {
   
   // Track Time to First Byte (TTFB)
   window.addEventListener('load', () => {
-    if (performance.navigation && performance.timing) {
-      const ttfb = performance.timing.responseStart - performance.timing.navigationStart;
+    const navigationEntries = performance.getEntriesByType('navigation');
+    if (navigationEntries.length > 0) {
+      const navigation = navigationEntries[0];
+      const ttfb = navigation.responseStart - navigation.fetchStart;
       console.log('TTFB:', ttfb, 'ms');
       
       if (window.gtag) {
