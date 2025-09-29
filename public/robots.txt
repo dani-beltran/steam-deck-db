@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://dlb-demos.s3.eu-west-1.amazonaws.com/sitemap.xml
+
+# Crawl-delay (optional - some bots respect this)
+Crawl-delay: 1
+
+# Disallow certain file types that are not useful for SEO
+Disallow: *.json
+Disallow: *.js.map
+Disallow: *.css.map
+
+# Allow important assets
+Allow: /assets/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.gif
+Allow: *.svg
+Allow: *.webp

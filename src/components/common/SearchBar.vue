@@ -8,14 +8,18 @@
         class="search-input"
         @keyup.enter="handleSearch"
         @input="handleInput"
+        autocomplete="off"
+        spellcheck="false"
+        :aria-label="loading ? 'Searching...' : 'Enter search term'"
       />
       <Button 
         @click="handleSearch" 
         variant="search" 
         size="large"
         :disabled="loading"
+        :aria-label="loading ? 'Searching...' : 'Run the search'"
       >
-        <Search class="search-icon" />
+        <Search class="search-icon" aria-hidden="true" />
       </Button>
     </div>
   </div>
@@ -106,6 +110,18 @@ export default {
   width: 24px;
   height: 24px;
   color: white;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 @media (max-width: 768px) {

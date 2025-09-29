@@ -1,14 +1,19 @@
 <template>
   <div class="app-layout">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
       <AppHeader />
       
       <main class="main-content">
         <!-- Game Name Search Section -->
-        <GameSearch @game-selected="onGameSelected" />
+        <section aria-label="Game Search" class="search-section">
+          <GameSearch @game-selected="onGameSelected" />
+        </section>
 
         <!-- Game Settings Section -->
-        <GameSettings ref="gameSettings" :selected-game="selectedGame" />
+        <section aria-label="Game Settings" class="settings-section">
+          <GameSettings ref="gameSettings" :selected-game="selectedGame" />
+        </section>
       </main>
     </div>
     <!-- Footer Section -->
@@ -60,6 +65,24 @@ export default {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #667eea;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: top 0.3s;
+}
+
+.skip-link:focus {
+  top: 6px;
 }
 
 .container {

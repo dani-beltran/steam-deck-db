@@ -1,7 +1,7 @@
 <template>
-  <header class="header">
-    <h1 class="title">SteamDeck Unofficial DB</h1>
-    <p class="subtitle">The definitive Steam Deck settings database! Optimize every game for best performance.</p>
+  <header class="header" role="banner">
+    <h1 class="title">Steam Deck Unnoficial Database</h1>
+    <p class="subtitle">The definitive Steam Deck configuration database! Optimize every game for best performance on the Deck.</p>
   </header>
 </template>
 

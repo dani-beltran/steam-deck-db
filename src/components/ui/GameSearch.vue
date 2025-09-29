@@ -3,16 +3,17 @@
     <h2 class="search-title">Search by game</h2>
     <SearchBar
       v-model="gameName"
-      placeholder="Enter game name..."
+      placeholder="Enter Steam game name..."
       :loading="gameSearchLoading"
       @search="searchGameByName"
       @input="onGameNameInput"
+      aria-label="Search for Steam Deck game settings"
     />
 
     <!-- Game Search Results -->
-    <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results">
-      <h3>Found {{ gameSearchResults.length }} games:</h3>
-      <div class="game-grid">
+    <div v-if="gameSearchResults.length > 0 && !gameSearchLoading" class="game-results" role="region" aria-label="Search results">
+      <h3>Found {{ gameSearchResults.length }} Steam games:</h3>
+      <div class="game-grid" role="list" aria-label="List of Steam games with available settings">
         <transition-group name="game-card" tag="div" class="game-grid-inner">
           <GameCard
             v-for="(game, index) in displayedResults" 
@@ -21,6 +22,7 @@
             :is-selected="selectedGameId === game.id"
             :animation-delay="index >= this.INITIAL_RESULTS_COUNT ? (index - this.INITIAL_RESULTS_COUNT) * 0.1 : 0"
             @select="selectGame"
+            role="listitem"
           />
         </transition-group>
       </div>

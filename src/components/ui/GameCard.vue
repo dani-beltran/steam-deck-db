@@ -1,27 +1,33 @@
 <template>
-  <div 
+  <article 
     class="game-card"
     :class="{ 'game-card-selected': isSelected }"
     :style="{ '--animation-delay': animationDelay + 's' }"
     @click="$emit('select', game)"
+    :aria-label="`Select ${game.name} for Steam Deck settings`"
+    role="button"
+    tabindex="0"
+    @keydown.enter="$emit('select', game)"
+    @keydown.space.prevent="$emit('select', game)"
   >
     <img 
       v-if="game.tiny_image || game.header_image" 
       :src="game.tiny_image || game.header_image" 
-      :alt="game.name"
+      :alt="`${game.name} game cover`"
       class="game-image"
       @error="$event.target.style.display = 'none'"
+      loading="lazy"
     />
     <div class="game-info">
       <h4 class="game-name">{{ game.name }}</h4>
-      <p class="game-id">ID: {{ game.id }}</p>
-      <div class="game-platforms" v-if="game.platforms">
-        <span v-if="game.platforms.windows" class="platform">Windows</span>
-        <span v-if="game.platforms.mac" class="platform">Mac</span>
-        <span v-if="game.platforms.linux" class="platform">Linux</span>
+      <p class="game-id">Steam ID: {{ game.id }}</p>
+      <div class="game-platforms" v-if="game.platforms" aria-label="Supported platforms">
+        <span v-if="game.platforms.windows" class="platform" aria-label="Windows compatible">Windows</span>
+        <span v-if="game.platforms.mac" class="platform" aria-label="Mac compatible">Mac</span>
+        <span v-if="game.platforms.linux" class="platform" aria-label="Linux compatible">Linux</span>
       </div>
     </div>
-  </div>
+  </article>
 </template>
 
 <script>
