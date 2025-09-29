@@ -14,7 +14,7 @@
           :size="18" 
           class="tab-icon"
         />
-        {{ tab.label }}
+        <span class="tab-label">{{ tab.label }}</span>
         <span v-if="tab.count !== undefined" class="tab-count">({{ tab.count }})</span>
       </button>
     </div>
@@ -166,6 +166,10 @@ export default {
     flex: 1;
     min-width: 0;
     text-align: center;
+  }
+
+  .tab-label {
+    display: none;
   }
 
   .tab-count {
