@@ -1,6 +1,6 @@
 <template>
   <div class="search-section">
-    <h2 class="search-title">Search by Game Name</h2>
+    <h2 class="search-title">Search by game</h2>
     <SearchBar
       v-model="gameName"
       placeholder="Enter game name..."
@@ -87,7 +87,7 @@ export default {
       if (this.showAllResults || this.gameSearchResults.length <= 5) {
         return this.gameSearchResults
       }
-      return this.gameSearchResults.slice(0, 6)
+      return this.gameSearchResults.slice(0, 5)
     },
     hasMoreResults() {
       return this.gameSearchResults.length > 5 && !this.showAllResults
