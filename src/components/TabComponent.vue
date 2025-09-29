@@ -168,12 +168,20 @@ export default {
     text-align: center;
   }
 
+  .tab-button.active {
+    flex: 3;
+  }
+
   .tab-label {
     display: none;
   }
 
+  .tab-button.active .tab-label {
+    display: inline;
+  }
+
   .tab-count {
-    font-size: 0.7rem;
+    display: none;
   }
 }
 </style>
