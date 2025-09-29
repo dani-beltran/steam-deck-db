@@ -8,7 +8,6 @@
         :loading="gameSearchLoading"
         @search="searchGameByName"
         @input="onGameNameInput"
-        @keydown="handleKeyDown"
         @blur="hideSuggestions"
         @focus="showSuggestions = suggestions.length > 0"
         aria-label="Search for Steam Deck game settings"
@@ -23,6 +22,7 @@
         title="Game Suggestions"
         @select-suggestion="selectSuggestion"
         @update-selected-index="selectedSuggestionIndex = $event"
+        @close-suggestions="closeSuggestions"
       />
     </div>
 
@@ -37,7 +37,7 @@
             :game="game"
             :is-selected="selectedGameId === game.id"
             :animation-delay="index >= this.INITIAL_RESULTS_COUNT ? (index - this.INITIAL_RESULTS_COUNT) * 0.1 : 0"
-            @select="selectGame"
+            @select="selectGameCard"
             role="listitem"
           />
         </transition-group>
@@ -214,38 +214,10 @@ export default {
       this.searchGameByName()
     },
 
-    handleKeyDown(event) {
-      if (!this.showSuggestions || this.suggestions.length === 0) return
-      
-      switch (event.key) {
-        case 'ArrowDown':
-          event.preventDefault()
-          this.selectedSuggestionIndex = Math.min(
-            this.selectedSuggestionIndex + 1,
-            this.suggestions.length - 1
-          )
-          break
-        case 'ArrowUp':
-          event.preventDefault()
-          this.selectedSuggestionIndex = Math.max(
-            this.selectedSuggestionIndex - 1,
-            -1
-          )
-          break
-        case 'Enter':
-          event.preventDefault()
-          if (this.selectedSuggestionIndex >= 0) {
-            this.selectSuggestion(this.suggestions[this.selectedSuggestionIndex])
-          } else {
-            this.searchGameByName()
-          }
-          break
-        case 'Escape':
-          this.suggestions = []
-          this.showSuggestions = false
-          this.selectedSuggestionIndex = -1
-          break
-      }
+    closeSuggestions() {
+      this.suggestions = []
+      this.showSuggestions = false
+      this.selectedSuggestionIndex = -1
     },
 
     hideSuggestions() {
@@ -256,7 +228,7 @@ export default {
       }, 150)
     },
 
-    selectGame(game) {
+    selectGameCard(game) {
       this.gameName = game.name
       this.selectedGameId = game.id
       this.$emit('game-selected', game)

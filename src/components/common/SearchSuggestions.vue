@@ -59,7 +59,7 @@ export default {
       default: 'Suggestions'
     }
   },
-  emits: ['select-suggestion', 'update-selected-index'],
+  emits: ['select-suggestion', 'update-selected-index', 'close-suggestions'],
   methods: {
     selectSuggestion(suggestion, index) {
       this.$emit('select-suggestion', suggestion, index)
@@ -67,7 +67,47 @@ export default {
     
     updateSelectedIndex(index) {
       this.$emit('update-selected-index', index)
+    },
+    
+    handleKeyDown(event) {
+      if (!this.show || this.suggestions.length === 0) return
+      
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault()
+          const nextIndex = Math.min(
+            this.selectedIndex + 1,
+            this.suggestions.length - 1
+          )
+          this.updateSelectedIndex(nextIndex)
+          break
+        case 'ArrowUp':
+          event.preventDefault()
+          const prevIndex = Math.max(
+            this.selectedIndex - 1,
+            -1
+          )
+          this.updateSelectedIndex(prevIndex)
+          break
+        case 'Enter':
+          event.preventDefault()
+          if (this.selectedIndex >= 0) {
+            this.selectSuggestion(this.suggestions[this.selectedIndex], this.selectedIndex)
+          }
+          break
+        case 'Escape':
+          this.$emit('close-suggestions')
+          break
+      }
     }
+  },
+  mounted() {
+    // Listen for keydown events on the document when component is active
+    document.addEventListener('keydown', this.handleKeyDown)
+  },
+  beforeUnmount() {
+    // Clean up event listener
+    document.removeEventListener('keydown', this.handleKeyDown)
   }
 }
 </script>
