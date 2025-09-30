@@ -72,19 +72,19 @@ export default {
 
 .game-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-color: var(--primary-color-start);
+  box-shadow: 0 4px 16px var(--highlight-box-shadow-hover);
+  border-color: var(--highlight-color);
 }
 
 .game-card-selected {
   border-color: var(--highlight-color) !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2), 0 8px 25px rgba(79, 70, 229, 0.3) !important;
+  box-shadow: 0 0 0 3px var(--highlight-box-shadow-selected), 0 8px 25px var(--highlight-box-shadow-selected-deep) !important;
   transform: translateY(-2px);
-  background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+  background: var(--highlight-selected-bg-gradient);
 }
 
 .game-card-selected:hover {
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3), 0 12px 35px rgba(79, 70, 229, 0.4) !important;
+  box-shadow: 0 0 0 3px var(--highlight-box-shadow-selected-deep), 0 12px 35px var(--highlight-box-shadow-selected-hover) !important;
 }
 
 .game-image {

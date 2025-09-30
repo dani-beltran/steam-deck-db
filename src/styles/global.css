@@ -1,7 +1,7 @@
 :root {
     /* Theme colors */
-  --primary-color-start: #667eea;
-  --primary-color-end: #764ba2;
+  --primary-color-start: #0370BE;
+  --primary-color-end: #00355B;
   --primary-color: linear-gradient(135deg, var(--primary-color-start) 0%, var(--primary-color-end) 100%);
   --primary-text-color: #ffffff;
 
@@ -11,5 +11,12 @@
   --secondary-border-hover: #d1d5db;
   --secondary-bg-hover: #f9fafb;
   
-  --highlight-color: #4f46e5;
+  --highlight-color: #FCC337;
+  
+  /* Box shadow colors */
+  --highlight-box-shadow-hover: rgba(252, 195, 55, 0.15);
+  --highlight-box-shadow-selected: rgba(252, 195, 55, 0.2);
+  --highlight-box-shadow-selected-deep: rgba(252, 195, 55, 0.3);
+  --highlight-box-shadow-selected-hover: rgba(252, 195, 55, 0.4);
+  --highlight-selected-bg-gradient: linear-gradient(135deg, #ffffff 0%, #fffbf0 100%);
 }
