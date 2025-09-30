@@ -1,0 +1,26 @@
+{
+  "name": "Steam Deck Unofficial Database",
+  "short_name": "DeckuDB",
+  "description": "The definitive Steam Deck settings database. Find optimal game settings, performance tweaks, and configuration guides for thousands of Steam games.",
+  "icons": [
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#667eea",
+  "background_color": "#667eea",
+  "display": "standalone",
+  "start_url": "/"
+}
