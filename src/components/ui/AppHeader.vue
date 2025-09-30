@@ -1,5 +1,8 @@
 <template>
   <header class="header" role="banner">
+    <div class="logo-container">
+      <img src="@assets/decku-logo-text.png" alt="Decku Logo" class="logo" />
+    </div>
     <h1 class="title">Steam Deck Unnoficial Database</h1>
     <p class="subtitle">The definitive Steam Deck configuration database! Optimize every game for best performance on the Deck.</p>
   </header>
@@ -15,6 +18,20 @@ export default {
 .header {
   text-align: center;
   margin-bottom: 40px;
+}
+
+.logo-container {
+  margin-bottom: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  height: 200px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
 }
 
 .title {
@@ -37,6 +54,14 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .logo {
+    height: 60px;
+  }
+  
+  .logo-text {
+    font-size: 2rem;
+  }
+  
   .title {
     font-size: 2rem;
   }
