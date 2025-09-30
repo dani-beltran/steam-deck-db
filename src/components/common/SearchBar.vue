@@ -112,7 +112,7 @@ export default {
 }
 
 .search-input:focus {
-  border-color: #667eea;
+  border-color: var(--primary-color-start);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 

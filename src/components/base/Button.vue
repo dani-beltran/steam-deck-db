@@ -75,8 +75,8 @@ export default {
 
 /* Variants */
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--primary-color);
+  color: var(--primary-text-color);
   border-radius: 8px;
 }
 
@@ -90,26 +90,26 @@ export default {
 }
 
 .btn-search {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-color);
   color: white;
   border-radius: 0 12px 12px 0;
 }
 
 .btn-search:hover:not(.btn-disabled) {
-  transform: translateY(-1px);
+  transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-secondary {
-  background: white;
-  color: #374151;
-  border: 2px solid #e5e7eb;
+  background: var(--secondary-color);
+  color: var(--secondary-text-color);
+  border: 2px solid var(--secondary-border-color);
   border-radius: 8px;
 }
 
 .btn-secondary:hover:not(.btn-disabled) {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: var(--secondary-bg-hover);
+  border-color: var(--secondary-border-hover);
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

@@ -60,7 +60,7 @@ export default {
 }
 
 .properties-table th {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-color);
   color: white;
   padding: 16px;
   text-align: left;

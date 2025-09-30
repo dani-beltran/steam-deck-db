@@ -73,11 +73,11 @@ export default {
 .game-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-color: #667eea;
+  border-color: var(--primary-color-start);
 }
 
 .game-card-selected {
-  border-color: #4f46e5 !important;
+  border-color: var(--highlight-color) !important;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2), 0 8px 25px rgba(79, 70, 229, 0.3) !important;
   transform: translateY(-2px);
   background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);

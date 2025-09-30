@@ -76,7 +76,7 @@ export default {
   position: absolute;
   top: -40px;
   left: 6px;
-  background: #667eea;
+  background: var(--primary-color-start);
   color: white;
   padding: 8px;
   text-decoration: none;

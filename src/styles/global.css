@@ -1,0 +1,15 @@
+:root {
+    /* Theme colors */
+  --primary-color-start: #667eea;
+  --primary-color-end: #764ba2;
+  --primary-color: linear-gradient(135deg, var(--primary-color-start) 0%, var(--primary-color-end) 100%);
+  --primary-text-color: #ffffff;
+
+  --secondary-color: #fff;
+  --secondary-text-color: #374151;
+  --secondary-border-color: #e5e7eb;
+  --secondary-border-hover: #d1d5db;
+  --secondary-bg-hover: #f9fafb;
+  
+  --highlight-color: #4f46e5;
+}

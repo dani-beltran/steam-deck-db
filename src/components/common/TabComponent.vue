@@ -257,8 +257,8 @@ export default {
 }
 
 .tab-button.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: var(--primary-color-start);
+  border-bottom-color: var(--primary-color-start);
   background: #f8faff;
 }
 
@@ -272,7 +272,7 @@ export default {
 }
 
 .tab-button.active .tab-count {
-  background: #667eea;
+  background: var(--primary-color-start);
   color: white;
 }
 
