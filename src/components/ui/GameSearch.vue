@@ -75,6 +75,7 @@
 
 <script>
 import { searchSteamGamesByName, suggestSteamGames } from '../../services/steam/steamApi.js'
+import { isMobile } from '../../utils/deviceUtils.js'
 import ErrorMessage from '../common/ErrorMessage.vue'
 import Spinner from '../base/Spinner.vue'
 import GameCard from './GameCard.vue'
@@ -171,8 +172,10 @@ export default {
         this.gameSearchError = null
       }
       
-      // Trigger suggestions with debouncing
-      this.debouncedFetchSuggestions()
+      // Trigger suggestions with debouncing (only on non-mobile devices)
+      if (!isMobile()) {
+        this.debouncedFetchSuggestions()
+      }
     },
 
     debouncedFetchSuggestions() {
