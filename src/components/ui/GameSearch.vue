@@ -100,6 +100,7 @@ export default {
       gameSearchResults: [],
       gameSearchLoading: false,
       gameSearchError: null,
+      gameSearchSubmitted: false,
       selectedGameId: null,
       showAllResults: false,
       INITIAL_RESULTS_COUNT: 4,
@@ -107,7 +108,7 @@ export default {
       suggestionsLoading: false,
       showSuggestions: false,
       selectedSuggestionIndex: -1,
-      debounceTimer: null
+      debounceTimer: null,
     }
   },
   computed: {
@@ -140,6 +141,7 @@ export default {
         return
       }
 
+      this.gameSearchSubmitted = true
       this.gameSearchLoading = true
       this.gameSearchError = null
       this.gameSearchResults = []
@@ -162,6 +164,8 @@ export default {
     },
 
     onGameNameInput() {
+      this.gameSearchSubmitted = false
+
       // Clear previous search results when user starts typing
       if (this.gameSearchResults.length > 0) {
         this.gameSearchResults = []
@@ -171,7 +175,7 @@ export default {
       if (this.gameSearchError) {
         this.gameSearchError = null
       }
-      
+
       // Trigger suggestions with debouncing (only on non-mobile devices)
       if (!isMobile()) {
         this.debouncedFetchSuggestions()
@@ -209,8 +213,9 @@ export default {
       
       try {
         const suggestions = await suggestSteamGames(this.gameName.trim(), 8)
-        this.suggestions = suggestions
-        this.showSuggestions = suggestions.length > 0
+        // Only show suggestions if the search hasn't been submitted
+        this.suggestions = this.gameSearchSubmitted ? [] : suggestions
+        this.showSuggestions = this.suggestions.length > 0
         this.selectedSuggestionIndex = -1
       } catch (error) {
         console.error('Error fetching suggestions:', error)
