@@ -3,15 +3,21 @@
     <!-- Game Header with Title and Image -->
     <div class="game-header">
       <div class="game-image-container" v-if="gameImage">
-        <img 
-          :src="gameImage" 
-          :alt="`${gameTitle} cover image`"
-          class="game-image"
-          @error="onImageError"
-        />
+        <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-link">
+          <img 
+            :src="gameImage" 
+            :alt="`${gameTitle} cover image`"
+            class="game-image"
+            @error="onImageError"
+          />
+        </a>
       </div>
       <div class="game-title-section">
-        <h2 class="game-title">{{ gameTitle }}</h2>
+        <h2 class="game-title">
+          <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-title-link">
+            {{ gameTitle }}
+          </a>
+        </h2>
         
         <!-- Game Rating and Verification -->
         <div class="game-badges">
@@ -71,6 +77,9 @@ export default {
     },
     gameId() {
       return this.gameData?.game_id || ''
+    },
+    steamStoreUrl() {
+      return this.gameId ? `https://store.steampowered.com/app/${this.gameId}/` : '#'
     }
   },
   watch: {
@@ -131,6 +140,22 @@ export default {
 
 .game-image:hover {
   transform: scale(1.02);
+}
+
+.steam-link {
+  display: block;
+  text-decoration: none;
+}
+
+.steam-title-link {
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.steam-title-link:hover {
+  color: #1171d3;
+  text-decoration: underline;
 }
 
 .game-title-section {
