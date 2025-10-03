@@ -232,10 +232,9 @@ export default {
     },
 
     async selectSuggestion(suggestion) {
-      this.gameName = suggestion.name
       this.closeSuggestions()
-      await this.searchGameByName()
-      this.selectGameCard(suggestion)
+      // Route directly to the game page using the suggestion ID
+      this.$router.push(`/game/${suggestion.id}`)
     },
 
     closeSuggestions() {

@@ -1,7 +1,7 @@
 <template>
   <div class="processing-warning">
     <div class="warning-icon">⏳</div>
-    <h3>Settings Being Processed</h3>
+    <h3>Game Being Processed</h3>
     <p>The game settings for {{ gameName }} are still being processed.</p>
     <p>Please check back in a few minutes.</p>
     <button @click="handleDismiss" class="warning-dismiss">Dismiss</button>
