@@ -3,7 +3,7 @@
     <!-- Game Performance Summary -->
     <CollapsibleCard
       v-if="results && results.game_performance_summary && !loading"
-      title="Performance Summary"
+      title="Performance Analysis"
       card-class="performance-summary-section"
       aria-label="Game performance summary"
       toggle-aria-label="Toggle performance summary visibility"
