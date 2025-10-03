@@ -7,20 +7,63 @@
       </button>
     </div>
 
+    <!-- Loading State -->
+    <Spinner 
+      v-if="loading" 
+      message="Searching for game settings..."
+    />
+
+    <!-- Error State -->
+    <ErrorMessage 
+      :message="error"
+      @dismiss="clearError"
+      class="error-with-top-margin"
+    />
+
+    <!-- Game Description Section -->
+    <GameDescription 
+      :game-data="results"
+      :selected-game="selectedGame"
+      :loading="loading"
+    />
+
     <!-- Game Settings Section -->
     <section aria-label="Game Settings" class="settings-section">
-      <GameSettings :selected-game="selectedGame" />
+      <GameSettings 
+        :results="results"
+        :loading="loading"
+        :error="error"
+        :search-performed="searchPerformed"
+        :processing-warning="processingWarning"
+        @clear-processing-warning="clearProcessingWarning"
+      />
     </section>
+
+    <!-- Processing Warning -->
+    <ProcessingWarning 
+      v-if="processingWarning"
+      :game-name="selectedGame ? selectedGame.name : `ID: ${gameId}`"
+      @dismiss="clearProcessingWarning"
+    />
   </div>
 </template>
 
 <script>
 import GameSettings from '../components/ui/GameSettings.vue'
+import GameDescription from '../components/ui/GameDescription.vue'
+import ProcessingWarning from '../components/ui/ProcessingWarning.vue'
+import ErrorMessage from '../components/common/ErrorMessage.vue'
+import Spinner from '../components/base/Spinner.vue'
+import nodescriptBE from '../services/backend/nodescriptBE.js'
 
 export default {
   name: 'GamePage',
   components: {
-    GameSettings
+    GameSettings,
+    GameDescription,
+    ProcessingWarning,
+    ErrorMessage,
+    Spinner
   },
   props: {
     gameId: {
@@ -30,19 +73,26 @@ export default {
   },
   data() {
     return {
-      selectedGame: null
+      selectedGame: null,
+      results: null,
+      loading: false,
+      error: null,
+      searchPerformed: false,
+      processingWarning: false
     }
   },
   created() {
     // Create a game object from the route parameter
-    // In a real app, you might fetch game details from an API
     this.selectedGame = {
       id: this.gameId,
-      name: null // Will be populated by the GameSettings component if available
+      name: null
     }
     
     // Update document title
     this.updateDocumentTitle()
+    
+    // Search for game settings
+    this.searchSettings()
   },
   watch: {
     gameId(newGameId) {
@@ -52,6 +102,7 @@ export default {
         name: null
       }
       this.updateDocumentTitle()
+      this.searchSettings()
     }
   },
   methods: {
@@ -59,9 +110,45 @@ export default {
       this.$router.push({ name: 'Home' })
     },
     
+    clearError() {
+      this.error = null
+    },
+
+    clearProcessingWarning() {
+      this.processingWarning = false
+    },
+    
     updateDocumentTitle() {
       const gameTitle = this.selectedGame?.name || `Game ID: ${this.gameId}`
       document.title = `${gameTitle} - Steam Deck Settings DB`
+    },
+
+    async searchSettings() {
+      if (!this.selectedGame || !this.selectedGame.id) {
+        this.error = 'Please select a game first'
+        return
+      }
+
+      this.loading = true
+      this.error = null
+      this.results = null
+      this.searchPerformed = true
+      this.processingWarning = false
+
+      try {
+        const result = await nodescriptBE.searchSettings(this.selectedGame.id)
+        
+        if (result.status === 'pending') {
+          this.processingWarning = true
+          return
+        }
+        
+        this.results = result.data
+      } catch (err) {
+        this.error = err.message
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
@@ -102,6 +189,10 @@ export default {
 }
 
 .settings-section {
+  margin-top: 20px;
+}
+
+.error-with-top-margin {
   margin-top: 20px;
 }
 </style>

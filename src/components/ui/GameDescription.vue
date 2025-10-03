@@ -1,0 +1,246 @@
+<template>
+  <section v-if="gameData && !loading" class="game-description" aria-label="Game information">
+    <!-- Game Header with Title and Image -->
+    <div class="game-header">
+      <div class="game-image-container" v-if="gameImage">
+        <img 
+          :src="gameImage" 
+          :alt="`${gameTitle} cover image`"
+          class="game-image"
+          @error="onImageError"
+        />
+      </div>
+      <div class="game-title-section">
+        <h2 class="game-title">{{ gameTitle }}</h2>
+        
+        <!-- Game Rating and Verification -->
+        <div class="game-badges">
+          <div v-if="gameData.steamdeck_rating" class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`">
+            {{ gameData.steamdeck_rating.toUpperCase() }}
+          </div>
+          <div v-if="gameData.steamdeck_verified" class="verified-badge">
+            ✓ Verified
+          </div>
+          <div v-if="gameData.proton_version" class="proton-badge">
+            Proton: {{ gameData.proton_version }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Review Summary -->
+    <div v-if="gameData.game_review_summary" class="summary-section">
+      <p class="summary-text">{{ gameData.game_review_summary }}</p>
+    </div>
+
+  </section>
+</template>
+
+<script>
+export default {
+  name: 'GameDescription',
+  props: {
+    gameData: {
+      type: Object,
+      default: null
+    },
+    selectedGame: {
+      type: Object,
+      default: null
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      gameImage: null,
+      imageLoadError: false
+    }
+  },
+  computed: {
+    gameTitle() {
+      return this.gameData.game_name || `Game ID: ${this.gameId}`
+    },
+    gameId() {
+      return this.gameData.id || ''
+    }
+  },
+  watch: {
+    selectedGame: {
+      handler(newGame) {
+        if (newGame?.id) {
+          this.loadGameImage()
+        }
+      },
+      immediate: true
+    }
+  },
+  methods: {
+    loadGameImage() {
+      if (!this.selectedGame?.id) return
+      
+      // Steam's standard game image URL format
+      // This uses Steam's official CDN for game header images
+      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.selectedGame.id}/header.jpg`
+      this.imageLoadError = false
+    },
+    
+    onImageError() {
+      this.imageLoadError = true
+      this.gameImage = null
+    }
+  }
+}
+</script>
+
+<style scoped>
+.game-description {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.game-header {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+  align-items: flex-start;
+}
+
+.game-image-container {
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.game-image {
+  width: 280px;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.game-image:hover {
+  transform: scale(1.02);
+}
+
+.game-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-title {
+  color: #374151;
+  margin: 0 0 20px 0;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.game-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rating-badge, .verified-badge, .proton-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rating-badge.rating-gold {
+  background: linear-gradient(135deg, #ffd700, #ffed4a);
+  color: #92400e;
+}
+
+.rating-badge.rating-platinum {
+  background: linear-gradient(135deg, #e5e7eb, #f3f4f6);
+  color: #374151;
+}
+
+.rating-badge.rating-native {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.rating-badge.rating-playable {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: white;
+}
+
+.rating-badge.rating-unsupported {
+  background: linear-gradient(135deg, #ef4444, #f87171);
+  color: white;
+}
+
+.verified-badge {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: white;
+}
+
+.proton-badge {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.summary-section {
+  margin-bottom: 25px;
+  padding: 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border-left: 4px solid #6366f1;
+}
+
+.summary-section h3 {
+  color: #374151;
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.summary-text {
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .game-image {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    aspect-ratio: 280/130;
+  }
+  
+  .game-badges {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .game-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-title {
+    font-size: 1.2rem;
+  }
+  
+  .summary-section {
+    padding: 15px;
+  }
+}
+</style>
