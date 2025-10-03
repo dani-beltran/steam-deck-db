@@ -117,7 +117,7 @@ export default {
   },
   computed: {
     gameTitle() {
-      return this.results.game_name || `Game ID: ${this.results.id}`
+      return this.results.game_name || `Game ID: ${this.results.gameId}`
     },
     
     filteredSettings() {
