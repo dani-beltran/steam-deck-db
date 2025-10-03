@@ -1,9 +1,17 @@
 <template>
   <div class="game-settings">
+    <!-- Game Performance Summary -->
+    <section v-if="results && results.game_performance_summary && !loading" class="performance-summary-section" aria-label="Game performance summary">
+      <h3>Performance Summary</h3>
+      <div class="performance-summary-content">
+        <p>{{ results.game_performance_summary }}</p>
+      </div>
+    </section>
+
     <!-- Settings Configurations -->
     <section v-if="results && results.settings && results.settings.length > 0 && !loading" class="settings-section" aria-label="Game settings configurations">
       <div v-if="results.settings.length > 1" class="settings-header">
-        <h3>Recommended Settings Configuration</h3>
+        <h3>Recommended Settings</h3>
         
         <!-- Hardware Filter Badges -->
         <div v-if="hasMultipleHardwareTypes" class="hardware-filter">
@@ -223,6 +231,34 @@ export default {
 <style scoped>
 .game-settings {
   width: 100%;
+}
+
+.performance-summary-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.performance-summary-section h3 {
+  color: #374151;
+  margin: 0 0 15px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.performance-summary-content {
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.performance-summary-content p {
+  margin: 0;
 }
 
 .settings-section {
