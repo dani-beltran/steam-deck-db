@@ -234,6 +234,11 @@ export default {
   .game-title {
     font-size: 1.2rem;
   }
+
+  .game-image {
+    width: 100%;
+    max-width: 100%;
+  }
   
   .summary-section {
     padding: 15px;
