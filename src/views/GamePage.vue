@@ -23,7 +23,6 @@
     <!-- Game Description Section -->
     <GameDescription 
       :game-data="results"
-      :selected-game="selectedGame"
       :loading="loading"
     />
 
@@ -42,7 +41,7 @@
     <!-- Processing Warning -->
     <ProcessingWarning 
       v-if="processingWarning"
-      :game-name="selectedGame ? selectedGame.name : `ID: ${gameId}`"
+      :game-name="gameTitle"
       @dismiss="clearProcessingWarning"
     />
   </div>
@@ -73,7 +72,6 @@ export default {
   },
   data() {
     return {
-      selectedGame: null,
       results: null,
       loading: false,
       error: null,
@@ -81,13 +79,12 @@ export default {
       processingWarning: false
     }
   },
-  created() {
-    // Create a game object from the route parameter
-    this.selectedGame = {
-      id: this.gameId,
-      name: null
+  computed: {
+    gameTitle() {
+      return this.results?.game_name || `Game ID: ${this.gameId}`
     }
-    
+  },
+  created() {
     // Update document title
     this.updateDocumentTitle()
     
@@ -97,21 +94,12 @@ export default {
   mounted() {
     // Add keyboard event listener for backspace key
     document.addEventListener('keydown', this.handleKeydown)
+    this.updateDocumentTitle()
+    this.searchSettings()
   },
   unmounted() {
     // Remove keyboard event listener to prevent memory leaks
     document.removeEventListener('keydown', this.handleKeydown)
-  },
-  watch: {
-    gameId(newGameId) {
-      // Update selected game when route parameter changes
-      this.selectedGame = {
-        id: newGameId,
-        name: null
-      }
-      this.updateDocumentTitle()
-      this.searchSettings()
-    }
   },
   methods: {
     handleKeydown(event) {
@@ -141,13 +129,12 @@ export default {
     },
     
     updateDocumentTitle() {
-      const gameTitle = this.selectedGame?.name || `Game ID: ${this.gameId}`
-      document.title = `${gameTitle} - Steam Deck Settings DB`
+      document.title = `${this.gameTitle} - Steam Deck Settings DB`
     },
 
     async searchSettings() {
-      if (!this.selectedGame || !this.selectedGame.id) {
-        this.error = 'Please select a game first'
+      if (!this.gameId) {
+        this.error = 'Unknown game ID.'
         return
       }
 
@@ -158,7 +145,7 @@ export default {
       this.processingWarning = false
 
       try {
-        const result = await nodescriptBE.searchSettings(this.selectedGame.id)
+        const result = await nodescriptBE.searchSettings(this.gameId)
         
         if (result.status === 'pending') {
           this.processingWarning = true

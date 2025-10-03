@@ -2,9 +2,8 @@
   <div class="processing-warning">
     <div class="warning-icon">⏳</div>
     <h3>Game Being Processed</h3>
-    <p>The game settings for {{ gameName }} are still being processed.</p>
+    <p>The recommended game settings for {{ gameName }} are still being processed.</p>
     <p>Please check back in a few minutes.</p>
-    <button @click="handleDismiss" class="warning-dismiss">Dismiss</button>
   </div>
 </template>
 
@@ -50,19 +49,5 @@ export default {
 
 .processing-warning p {
   margin: 8px 0;
-}
-
-.warning-dismiss {
-  background: #d97706;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 12px;
-}
-
-.warning-dismiss:hover {
-  background: #b45309;
 }
 </style>

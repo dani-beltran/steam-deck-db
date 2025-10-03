@@ -44,10 +44,6 @@ export default {
       type: Object,
       default: null
     },
-    selectedGame: {
-      type: Object,
-      default: null
-    },
     loading: {
       type: Boolean,
       default: false
@@ -64,13 +60,13 @@ export default {
       return this.gameData.game_name || `Game ID: ${this.gameId}`
     },
     gameId() {
-      return this.gameData.id || ''
+      return this.gameData?.gameId || ''
     }
   },
   watch: {
-    selectedGame: {
+    gameData: {
       handler(newGame) {
-        if (newGame?.id) {
+        if (newGame?.gameId) {
           this.loadGameImage()
         }
       },
@@ -79,11 +75,11 @@ export default {
   },
   methods: {
     loadGameImage() {
-      if (!this.selectedGame?.id) return
-      
+      if (!this.gameId) return
+
       // Steam's standard game image URL format
       // This uses Steam's official CDN for game header images
-      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.selectedGame.id}/header.jpg`
+      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.gameId}/header.jpg`
       this.imageLoadError = false
     },
     
