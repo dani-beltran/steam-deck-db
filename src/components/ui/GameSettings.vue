@@ -145,8 +145,9 @@ export default {
       
       // Unknown or null hardware goes to 'lcd' group
       hardwareFiltered.forEach(config => {
-        const hardware = config.steamdeck_hardware?.toLowerCase() || 'lcd'
-        
+        let hardware = config.steamdeck_hardware?.toLowerCase()
+        hardware = (hardware === 'lcd' || hardware === 'oled') ? hardware : 'lcd'
+
         if (!hardwareGroups.has(hardware)) {
           hardwareGroups.set(hardware, [])
         }
@@ -156,7 +157,7 @@ export default {
       // For each hardware group, keep only the most recent configuration
       const result = []
       const currentYear = new Date().getFullYear()
-      
+      console.log('hardware:', hardwareGroups)
       hardwareGroups.forEach(configs => {
         // Sort by posted_at date (most recent first) and take the first one
         const sortedConfigs = configs.sort((a, b) => {
@@ -194,7 +195,7 @@ export default {
       const hardwareTypes = new Set(
         this.results.settings
           .map(config => config.steamdeck_hardware?.toLowerCase())
-          .filter(Boolean)
+          .filter(type => type === 'lcd' || type === 'oled')
       )
       
       return hardwareTypes.size > 1
