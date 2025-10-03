@@ -147,6 +147,11 @@ export default {
       this.gameSearchResults = []
       this.selectedGameId = null
       this.showAllResults = false
+      
+      // Ensure suggestions are completely hidden
+      this.suggestions = []
+      this.showSuggestions = false
+      this.selectedSuggestionIndex = -1
 
       try {
         const games = await searchSteamGamesByName(this.gameName.trim())
