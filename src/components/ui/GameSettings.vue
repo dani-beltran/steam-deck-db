@@ -122,7 +122,7 @@ export default {
   },
   computed: {
     gameTitle() {
-      return this.results.game_name || `Game ID: ${this.results.gameId}`
+      return this.results.game_name || `Game ID: ${this.results.game_id}`
     },
     
     filteredSettings() {

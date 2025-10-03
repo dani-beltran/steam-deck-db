@@ -70,13 +70,13 @@ export default {
       return this.gameData.game_name || `Game ID: ${this.gameId}`
     },
     gameId() {
-      return this.gameData?.gameId || ''
+      return this.gameData?.game_id || ''
     }
   },
   watch: {
     gameData: {
       handler(newGame) {
-        if (newGame?.gameId) {
+        if (newGame?.game_id) {
           this.loadGameImage()
         }
       },

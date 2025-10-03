@@ -22,7 +22,7 @@ class NodescriptBEService {
 
     try {
       const { data: resBody } = await axios.get(
-        `${this.baseUrl}/steamdeck/game-settings?gameId=${encodeURIComponent(gameId)}`
+        `${this.baseUrl}/steamdeck/game-settings?game_id=${encodeURIComponent(gameId)}`
       )
       
       if (resBody.status === 'pending') {
