@@ -2,8 +2,27 @@
   <div class="game-settings">
     <!-- Game Performance Summary -->
     <section v-if="results && results.game_performance_summary && !loading" class="performance-summary-section" aria-label="Game performance summary">
-      <h3>Performance Summary</h3>
-      <div class="performance-summary-content">
+      <div class="performance-summary-header">
+        <h3>Performance Summary</h3>
+        <button 
+          class="collapse-toggle"
+          @click="isPerformanceSummaryCollapsed = !isPerformanceSummaryCollapsed"
+          :aria-expanded="!isPerformanceSummaryCollapsed"
+          aria-label="Toggle performance summary visibility"
+        >
+          <svg 
+            :class="['collapse-icon', { rotated: isPerformanceSummaryCollapsed }]" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div v-show="!isPerformanceSummaryCollapsed" class="performance-summary-content">
         <p>{{ results.game_performance_summary }}</p>
       </div>
     </section>
@@ -112,7 +131,8 @@ export default {
   },
   data() {
     return {
-      selectedHardware: 'lcd'
+      selectedHardware: 'lcd',
+      isPerformanceSummaryCollapsed: false
     }
   },
   computed: {
@@ -297,6 +317,54 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.performance-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.performance-summary-header h3 {
+  margin: 0;
+  color: #374151;
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-toggle:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.collapse-toggle:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.collapse-icon {
+  transition: transform 0.2s ease;
+}
+
+.collapse-icon.rotated {
+  transform: rotate(-90deg);
 }
 
 .performance-summary-content {
