@@ -14,7 +14,7 @@
     <!-- Settings Configurations -->
     <section v-if="results && results.settings && results.settings.length > 0 && !loading" class="settings-section" aria-label="Game settings configurations">
       <div v-if="results.settings.length > 1" class="settings-header">
-        <h3>Recommended Settings</h3>
+        <h3 id="recommended-settings">Recommended Settings</h3>
         
         <!-- Hardware Filter Badges -->
         <div v-if="hasMultipleHardwareTypes" class="hardware-filter">

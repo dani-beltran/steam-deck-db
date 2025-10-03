@@ -21,10 +21,15 @@
           <div v-if="gameData.steamdeck_verified" class="verified-badge">
             ✓ Verified
           </div>
-          <div v-if="gameData.proton_version" class="proton-badge">
-            Proton: {{ gameData.proton_version }}
-          </div>
+          
         </div>
+        
+        <!-- Quick link to settings -->
+        <QuickLink 
+          href="#recommended-settings" 
+          target-id="recommended-settings" 
+          text="Check the Settings"
+        />
       </div>
     </div>
 
@@ -37,8 +42,13 @@
 </template>
 
 <script>
+import QuickLink from '../common/QuickLink.vue'
+
 export default {
   name: 'GameDescription',
+  components: {
+    QuickLink
+  },
   props: {
     gameData: {
       type: Object,
@@ -140,9 +150,10 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-bottom: 15px;
 }
 
-.rating-badge, .verified-badge, .proton-badge {
+.rating-badge, .verified-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -178,11 +189,6 @@ export default {
 
 .verified-badge {
   background: linear-gradient(135deg, #10b981, #34d399);
-  color: white;
-}
-
-.proton-badge {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
   color: white;
 }
 
