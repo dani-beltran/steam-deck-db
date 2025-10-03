@@ -21,16 +21,15 @@ export default {
 }
 
 .logo-container {
-  margin-bottom: 0px;
+  margin-bottom: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .logo {
-  height: 200px;
+  height: 180px;
   width: auto;
-  max-width: 200px;
   object-fit: contain;
 }
 
@@ -54,8 +53,13 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .logo-container {
+    margin-bottom: 20px;
+  }
+  
   .logo {
-    height: 60px;
+    height: 100px;
+    max-width: 200px;
   }
   
   .logo-text {
