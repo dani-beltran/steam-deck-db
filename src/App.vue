@@ -2,8 +2,6 @@
   <div class="app-layout">
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container">
-      <AppHeader />
-      
       <main class="main-content" id="main-content">
         <router-view />
       </main>
@@ -15,13 +13,11 @@
 
 <script>
 import Footer from './components/common/Footer.vue'
-import AppHeader from './components/ui/AppHeader.vue'
 
 export default {
   name: 'App',
   components: {
-    Footer,
-    AppHeader
+    Footer
   }
 }
 </script>

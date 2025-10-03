@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <HomeHeader />
     <!-- Game Name Search Section -->
     <section aria-label="Game Search" class="search-section">
       <GameSearch @game-selected="onGameSelected" />
@@ -9,11 +10,13 @@
 
 <script>
 import GameSearch from '../components/ui/GameSearch.vue'
+import HomeHeader from '../components/ui/HomeHeader.vue'
 
 export default {
   name: 'Home',
   components: {
-    GameSearch
+    GameSearch,
+    HomeHeader
   },
   created() {
     // Set document title for home page
