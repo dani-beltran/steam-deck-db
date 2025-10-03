@@ -4,16 +4,8 @@
     <div class="container">
       <AppHeader />
       
-      <main class="main-content">
-        <!-- Game Name Search Section -->
-        <section aria-label="Game Search" class="search-section">
-          <GameSearch @game-selected="onGameSelected" />
-        </section>
-
-        <!-- Game Settings Section -->
-        <section aria-label="Game Settings" class="settings-section">
-          <GameSettings ref="gameSettings" :selected-game="selectedGame" />
-        </section>
+      <main class="main-content" id="main-content">
+        <router-view />
       </main>
     </div>
     <!-- Footer Section -->
@@ -22,45 +14,14 @@
 </template>
 
 <script>
-import GameSearch from './components/ui/GameSearch.vue'
-import GameSettings from './components/ui/GameSettings.vue'
 import Footer from './components/common/Footer.vue'
 import AppHeader from './components/ui/AppHeader.vue'
 
 export default {
   name: 'App',
   components: {
-    GameSearch,
-    GameSettings,
     Footer,
     AppHeader
-  },
-  data() {
-    return {
-      selectedGame: null
-    }
-  },
-  methods: {
-    onGameSelected(game) {
-      this.selectedGame = game
-      
-      // Only scroll to GameSettings component on narrow devices (mobile/tablet)
-      this.$nextTick(() => {
-        setTimeout(() => {
-          if (this.$refs.gameSettings && this.$refs.gameSettings.$el) {
-            // Check if the screen width is narrow (768px or less)
-            const isNarrowDevice = window.innerWidth <= 768
-            
-            if (isNarrowDevice) {
-              this.$refs.gameSettings.$el.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-              })
-            }
-          }
-        }, 100)
-      })
-    }
   }
 }
 </script>

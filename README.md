@@ -17,11 +17,24 @@ Visit the live application: [Steam Deck Settings Database](https://dlb-demos.s3.
 ## 🛠 Technical Stack
 
 - **Frontend**: Vue.js 3 with Composition API
+- **Routing**: Vue Router 4
 - **Build Tool**: Vite
 - **Icons**: Lucide Vue Next
 - **HTTP Client**: Axios
 - **Styling**: CSS3 with CSS Grid and Flexbox
 - **API Integration**: Steam Web API and custom backend services
+
+## 📱 Application Structure
+
+### Routes
+- `/` - Home page with game search functionality
+- `/game/:gameId` - Individual game settings page
+
+### Key Components
+- **GameSearch**: Search and select games from Steam database
+- **GameSettings**: Display optimized settings for selected games
+- **Home**: Landing page with search interface
+- **GamePage**: Individual game settings page
 
 ## 🏗 Development
 
