@@ -94,6 +94,14 @@ export default {
     // Search for game settings
     this.searchSettings()
   },
+  mounted() {
+    // Add keyboard event listener for backspace key
+    document.addEventListener('keydown', this.handleKeydown)
+  },
+  unmounted() {
+    // Remove keyboard event listener to prevent memory leaks
+    document.removeEventListener('keydown', this.handleKeydown)
+  },
   watch: {
     gameId(newGameId) {
       // Update selected game when route parameter changes
@@ -106,6 +114,20 @@ export default {
     }
   },
   methods: {
+    handleKeydown(event) {
+      // Check if backspace key is pressed and not in an input field
+      if (event.key === 'Backspace' && !this.isInInputField(event.target)) {
+        event.preventDefault()
+        this.goBack()
+      }
+    },
+    
+    isInInputField(target) {
+      // Check if the target element is an input field where backspace should work normally
+      const inputTypes = ['INPUT', 'TEXTAREA', 'SELECT']
+      return inputTypes.includes(target.tagName) || target.contentEditable === 'true'
+    },
+    
     goBack() {
       this.$router.push({ name: 'Home' })
     },
