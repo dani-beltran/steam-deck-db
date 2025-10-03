@@ -1,31 +1,15 @@
 <template>
   <div class="game-settings">
     <!-- Game Performance Summary -->
-    <section v-if="results && results.game_performance_summary && !loading" class="performance-summary-section" aria-label="Game performance summary">
-      <div class="performance-summary-header">
-        <h3>Performance Summary</h3>
-        <button 
-          class="collapse-toggle"
-          @click="isPerformanceSummaryCollapsed = !isPerformanceSummaryCollapsed"
-          :aria-expanded="!isPerformanceSummaryCollapsed"
-          aria-label="Toggle performance summary visibility"
-        >
-          <svg 
-            :class="['collapse-icon', { rotated: isPerformanceSummaryCollapsed }]" 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-      <div v-show="!isPerformanceSummaryCollapsed" class="performance-summary-content">
-        <p>{{ results.game_performance_summary }}</p>
-      </div>
-    </section>
+    <CollapsibleCard
+      v-if="results && results.game_performance_summary && !loading"
+      title="Performance Summary"
+      card-class="performance-summary-section"
+      aria-label="Game performance summary"
+      toggle-aria-label="Toggle performance summary visibility"
+    >
+      <p>{{ results.game_performance_summary }}</p>
+    </CollapsibleCard>
 
     <!-- Settings Configurations -->
     <section v-if="results && results.settings && results.settings.length > 0 && !loading" class="settings-section" aria-label="Game settings configurations">
@@ -98,6 +82,7 @@
 <script>
 import PropertiesTable from '../common/PropertiesTable.vue'
 import TabComponent from '../common/TabComponent.vue'
+import CollapsibleCard from '../common/CollapsibleCard.vue'
 import { flattenObject } from '../../utils/objectUtils.js'
 import { Gamepad2, Monitor, Battery } from 'lucide-vue-next'
 
@@ -105,7 +90,8 @@ export default {
   name: 'GameSettings',
   components: {
     PropertiesTable,
-    TabComponent
+    TabComponent,
+    CollapsibleCard
   },
   props: {
     results: {
@@ -131,8 +117,7 @@ export default {
   },
   data() {
     return {
-      selectedHardware: 'lcd',
-      isPerformanceSummaryCollapsed: false
+      selectedHardware: 'lcd'
     }
   },
   computed: {
@@ -301,79 +286,7 @@ export default {
   width: 100%;
 }
 
-.performance-summary-section {
-  margin-bottom: 30px;
-  padding: 20px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-}
-
-.performance-summary-section h3 {
-  color: #374151;
-  margin: 0 0 15px 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.performance-summary-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.performance-summary-header h3 {
-  margin: 0;
-  color: #374151;
-  font-size: 1.3rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.collapse-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  color: #6b7280;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.collapse-toggle:hover {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.collapse-toggle:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-.collapse-icon {
-  transition: transform 0.2s ease;
-}
-
-.collapse-icon.rotated {
-  transform: rotate(-90deg);
-}
-
-.performance-summary-content {
-  color: #4b5563;
-  line-height: 1.6;
-  font-size: 1rem;
-}
-
-.performance-summary-content p {
+.performance-summary-section p {
   margin: 0;
 }
 
