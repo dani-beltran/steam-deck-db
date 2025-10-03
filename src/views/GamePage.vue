@@ -84,13 +84,6 @@ export default {
       return this.results?.game_name || `Game ID: ${this.gameId}`
     }
   },
-  created() {
-    // Update document title
-    this.updateDocumentTitle()
-    
-    // Search for game settings
-    this.searchSettings()
-  },
   mounted() {
     // Add keyboard event listener for backspace key
     document.addEventListener('keydown', this.handleKeydown)
