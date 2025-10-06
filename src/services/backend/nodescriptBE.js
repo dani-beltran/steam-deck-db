@@ -52,13 +52,13 @@ class NodescriptBEService {
     }
   }
 
-  async searchSteamGamesByName(term) {
+  async searchSteamGamesByName(term, limit = 10) {
     if (!term) {
       throw new Error('Search term is required')
     }
 
     try {
-      const searchUrl = `https://7vyclhz7.run.nodescript.dev/steamdeck/search-games?query=${encodeURIComponent(term)}`
+      const searchUrl = `https://7vyclhz7.run.nodescript.dev/steamdeck/search-games?query=${encodeURIComponent(term)}&limit=${limit}`
       const { data } = await axios.get(searchUrl)
       return data;
     } catch (err) {

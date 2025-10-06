@@ -257,9 +257,9 @@ export default {
       this.suggestionsLoading = true
       
       try {
-        const suggestions = await nodescriptBE.searchSteamGamesByName(this.gameName.trim(), 8)
+        const suggestions = await nodescriptBE.searchSteamGamesByName(this.gameName.trim(), 7)
         // Only show suggestions if the search hasn't been submitted
-        this.suggestions = this.gameSearchSubmitted ? [] : suggestions
+        this.suggestions = this.gameSearchSubmitted ? [] : suggestions.items || []
         this.showSuggestions = this.suggestions.length > 0
         this.selectedSuggestionIndex = -1
       } catch (error) {
