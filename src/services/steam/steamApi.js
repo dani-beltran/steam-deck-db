@@ -1,65 +1,6 @@
 import axios from 'axios'
 
 /**
- * Search for Steam games by name and return possible game IDs
- * @param {string} gameName - The name of the game to search for
- * @returns {Promise<Array>} Array of game objects with id, name, and other details
- */
-export async function searchSteamGamesByName(gameName) {
-  if (!gameName || typeof gameName !== 'string') {
-    throw new Error('Game name must be a non-empty string')
-  }
-
-  try {
-    // Steam doesn't have a direct search API, so we'll use the Steam store API
-    
-    // Method 1: Use Steam Store API search (requires CORS proxy)
-    const searchUrl = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(gameName)}&l=english&cc=US`
-    
-    // Since we can't directly call Steam API due to CORS, we'll use a CORS proxy
-    const proxyUrl = 'https://api.allorigins.win/raw?url='
-    const fullUrl = proxyUrl + encodeURIComponent(searchUrl)
-    
-    const response = await axios.get(fullUrl, {
-      timeout: 10000,
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-
-    if (response.data && response.data.items) {
-      return response.data.items.map(item => ({
-        id: item.id,
-        name: item.name,
-        type: item.type,
-        price: item.price ? {
-          currency: item.price.currency,
-          initial: item.price.initial,
-          final: item.price.final,
-          discount_percent: item.price.discount_percent
-        } : null,
-        platforms: {
-          windows: item.platforms?.windows || false,
-          mac: item.platforms?.mac || false,
-          linux: item.platforms?.linux || false
-        },
-        controller_support: item.controller_support,
-        header_image: item.header_image,
-        tiny_image: item.tiny_image,
-        release_date: item.release_date
-      }))
-    }
-
-    return []
-  } catch (error) {
-    console.error('Error searching Steam games:', error)
-    throw new Error(`Failed to search for Steam games: ${error.message}`)
-  }
-}
-
-
-
-/**
  * Get detailed information about a specific Steam game by ID
  * @param {string|number} gameId - The Steam app ID
  * @returns {Promise<Object>} Game details object

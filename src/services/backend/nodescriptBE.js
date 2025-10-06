@@ -51,7 +51,23 @@ class NodescriptBEService {
       }
     }
   }
+
+  async searchSteamGamesByName(term) {
+    if (!term) {
+      throw new Error('Search term is required')
+    }
+
+    try {
+      const searchUrl = `https://7vyclhz7.run.nodescript.dev/steamdeck/search-games?query=${encodeURIComponent(term)}`
+      const { data } = await axios.get(searchUrl)
+      return data;
+    } catch (err) {
+      console.error('Error searching for games:', err)
+      throw new Error('Failed to search for games. Please try again.')
+    }
+  }
 }
+
 
 // Export a singleton instance
 export default new NodescriptBEService()
