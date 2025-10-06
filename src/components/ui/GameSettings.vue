@@ -157,7 +157,6 @@ export default {
       // For each hardware group, keep only the most recent configuration
       const result = []
       const currentYear = new Date().getFullYear()
-      console.log('hardware:', hardwareGroups)
       hardwareGroups.forEach(configs => {
         // Sort by posted_at date (most recent first) and take the first one
         const sortedConfigs = configs.sort((a, b) => {
