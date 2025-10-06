@@ -84,6 +84,7 @@ import PropertiesTable from '../common/PropertiesTable.vue'
 import TabComponent from '../common/TabComponent.vue'
 import CollapsibleCard from '../common/CollapsibleCard.vue'
 import { flattenObject } from '../../utils/objectUtils.js'
+import { trackTabClick } from '../../services/analytics'
 import { Gamepad2, Monitor, Battery } from 'lucide-vue-next'
 
 export default {
@@ -117,7 +118,12 @@ export default {
   },
   data() {
     return {
-      selectedHardware: 'lcd'
+      selectedHardware: 'lcd',
+      tabLabels: {
+        game: 'Game Settings',
+        steamdeck: 'SteamOS Settings',
+        battery: 'Battery Performance'
+      }
     }
   },
   computed: {
@@ -215,8 +221,11 @@ export default {
     },
     
     onTabChanged(tabId) {
-      // Handle tab change if needed
-      // This could be used for analytics or other side effects
+      trackTabClick(tabId, this.tabLabels[tabId], 'game_settings', {
+        game_id: this.results?.game_id,
+        game_name: this.results?.game_name,
+        hardware_filter: this.selectedHardware
+      })
       console.log('Tab changed to:', tabId)
     },
 
@@ -256,21 +265,21 @@ export default {
       return [
         {
           id: 'game',
-          label: 'Game Settings',
+          label: this.tabLabels.game,
           icon: Gamepad2,
           count: gameSettings.length,
           hidden: gameSettings.length === 0
         },
         {
           id: 'steamdeck',
-          label: 'SteamOS Settings',
+          label: this.tabLabels.steamdeck,
           icon: Monitor,
           count: steamdeckSettings.length,
           hidden: steamdeckSettings.length === 0
         },
         {
           id: 'battery',
-          label: 'Battery Performance',
+          label: this.tabLabels.battery,
           icon: Battery,
           count: batteryPerformance.length,
           hidden: batteryPerformance.length === 0

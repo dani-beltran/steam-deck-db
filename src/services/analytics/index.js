@@ -12,5 +12,6 @@ export {
   trackSearchResults,
   trackSearchError,
   trackShowMoreSearchResults as trackShowMoreResults,
+  trackTabClick,
   trackCustomEvent
 } from './analytics.js'

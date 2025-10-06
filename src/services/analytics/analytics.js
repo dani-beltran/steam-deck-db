@@ -124,6 +124,25 @@ export function trackSearchError(searchTerm, errorMessage, searchType = 'game_se
 }
 
 /**
+ * Track tab click events
+ * @param {string} tabId - The ID of the clicked tab
+ * @param {string} tabLabel - The label/name of the clicked tab
+ * @param {string} context - The context where the tab was clicked (e.g., 'game_settings')
+ * @param {Object} additionalParams - Additional parameters to track
+ */
+export function trackTabClick(tabId, tabLabel, context = 'game_settings', additionalParams = {}) {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'tab_click', {
+      tab_id: tabId,
+      tab_label: tabLabel,
+      tab_context: context,
+      event_category: 'game_interaction',
+      ...additionalParams
+    })
+  }
+}
+
+/**
  * Track general custom events
  * @param {string} eventName - Name of the event
  * @param {Object} parameters - Event parameters
