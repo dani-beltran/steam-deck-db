@@ -48,7 +48,7 @@
       <transition name="show-more">
         <div v-if="hasMoreResults" class="show-more-container">
           <Button 
-            @click="showAllResults = true" 
+            @click="handleShowMore" 
             variant="primary" 
             size="medium"
           >
@@ -74,8 +74,9 @@
 </template>
 
 <script>
-import { searchSteamGamesByName, suggestSteamGames } from '../../services/steam/steamApi.js'
+import nodescriptBE from '../../services/backend/nodescriptBE.js'
 import { isMobile } from '../../utils/deviceUtils.js'
+import { trackSearch, trackSearchInput, trackSuggestionSelect, trackGameSelect, trackSearchResults, trackSearchError, trackShowMoreResults } from '../../services/analytics'
 import ErrorMessage from '../common/ErrorMessage.vue'
 import Spinner from '../base/Spinner.vue'
 import GameCard from './GameCard.vue'
@@ -109,6 +110,7 @@ export default {
       showSuggestions: false,
       selectedSuggestionIndex: -1,
       debounceTimer: null,
+      inputTrackingTimeout: null,
     }
   },
   computed: {
@@ -123,15 +125,20 @@ export default {
     }
   },
   methods: {
-    async handleSearch() {
+    async handleSearch(submitSource) {
       clearTimeout(this.debounceTimer)
       this.closeSuggestions()
       this.searchGameByName()
+      // Track the search event
+      trackSearch(this.gameName, 'game_search', {
+        search_source: submitSource ? submitSource : 'search_bar_button'
+      })
     },
     async handleSearchBarKeydown(event) {
       if (event.key === 'Enter') {
         if (this.selectedSuggestionIndex === -1) {
-          this.handleSearch()
+          // No suggestion selected, perform search
+          this.handleSearch('enter_key')
         }
       }
     },
@@ -154,8 +161,17 @@ export default {
       this.selectedSuggestionIndex = -1
 
       try {
-        const games = await searchSteamGamesByName(this.gameName.trim())
+        const results = await nodescriptBE.searchSteamGamesByName(this.gameName.trim())
+        const games = results.items || []
         this.gameSearchResults = games
+
+        // Track search results
+        trackSearchResults(
+          this.gameName.trim(),
+          results.total,
+          games.length > 0,
+          'game_search'
+        )
         
         if (games.length === 0) {
           this.gameSearchError = 'No games found with that name. Try a different search term.'
@@ -163,6 +179,9 @@ export default {
       } catch (err) {
         console.error('Error searching for games:', err)
         this.gameSearchError = `Failed to search for games: ${err.message}`
+        
+        // Track search error
+        trackSearchError(this.gameName.trim(), err.message, 'game_search')
       } finally {
         this.gameSearchLoading = false
       }
@@ -181,10 +200,31 @@ export default {
         this.gameSearchError = null
       }
 
+      // Track search input with debouncing to avoid too many events
+      this.debounceTrackInput()
+
       // Trigger suggestions with debouncing (only on non-mobile devices)
       if (!isMobile()) {
         this.debouncedFetchSuggestions()
       }
+    },
+
+    debounceTrackInput() {
+      // Clear existing timeout
+      if (this.inputTrackingTimeout) {
+        clearTimeout(this.inputTrackingTimeout)
+      }
+      
+      // Set new timeout to track input after 1 second of inactivity
+      this.inputTrackingTimeout = setTimeout(() => {
+        if (this.gameName && this.gameName.trim().length > 0) {
+          trackSearchInput(
+            this.gameName.trim(), 
+            this.gameName.trim().length, 
+            'game_search_input'
+          )
+        }
+      }, 1000)
     },
 
     debouncedFetchSuggestions() {
@@ -217,7 +257,7 @@ export default {
       this.suggestionsLoading = true
       
       try {
-        const suggestions = await suggestSteamGames(this.gameName.trim(), 8)
+        const suggestions = await nodescriptBE.searchSteamGamesByName(this.gameName.trim(), 8)
         // Only show suggestions if the search hasn't been submitted
         this.suggestions = this.gameSearchSubmitted ? [] : suggestions
         this.showSuggestions = this.suggestions.length > 0
@@ -232,6 +272,7 @@ export default {
     },
 
     async selectSuggestion(suggestion) {
+      trackSuggestionSelect(suggestion.name, this.selectedSuggestionIndex, this.gameName.trim())
       this.closeSuggestions()
       // Route directly to the game page using the suggestion ID
       this.$router.push(`/game/${suggestion.id}`)
@@ -252,6 +293,7 @@ export default {
     },
 
     selectGameCard(game) {
+      trackGameSelect(game, 'search_result')
       this.gameName = game.name
       this.selectedGameId = game.id
       this.$emit('game-selected', game)
@@ -259,12 +301,25 @@ export default {
 
     clearError() {
       this.gameSearchError = null
+    },
+
+    handleShowMore() {
+      trackShowMoreResults(
+        this.gameName.trim(),
+        this.gameSearchResults.length,
+        this.INITIAL_RESULTS_COUNT
+      )
+      this.showAllResults = true
     }
   },
   beforeUnmount() {
     // Clean up debounce timer
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer)
+    }
+    // Clean up input tracking timeout
+    if (this.inputTrackingTimeout) {
+      clearTimeout(this.inputTrackingTimeout)
     }
   }
 }
