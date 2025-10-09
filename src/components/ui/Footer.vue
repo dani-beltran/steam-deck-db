@@ -68,7 +68,6 @@ export default {
 
 <style scoped>
 .footer {
-  margin-top: 60px;
   padding: 20px 0;
   background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
   border-top: 1px solid #404040;

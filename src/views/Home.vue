@@ -47,11 +47,18 @@ export default {
 }
 
 .search-section {
-  margin-bottom: 120px;
+  margin-bottom: 160px;
 }
 
 .popular-section {
   margin-bottom: 20px;
   max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    margin-bottom: 120px;
+  }
+  
 }
 </style>
