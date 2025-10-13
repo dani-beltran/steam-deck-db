@@ -140,7 +140,7 @@ export default {
       try {
         const result = await apiService.searchSettings(this.gameId)
         
-        if (result.status === 'pending') {
+        if (result.status === 'queued') {
           this.processingWarning = true
           return
         }
