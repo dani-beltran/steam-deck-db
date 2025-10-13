@@ -53,7 +53,7 @@ import GameDescription from '../components/ui/GameDescription.vue'
 import ProcessingWarning from '../components/ui/ProcessingWarning.vue'
 import ErrorMessage from '../components/common/ErrorMessage.vue'
 import Spinner from '../components/base/Spinner.vue'
-import nodescriptBE from '../services/backend/nodescriptBE.js'
+import apiService from '../services/backend/apiService.js'
 
 export default {
   name: 'GamePage',
@@ -138,14 +138,14 @@ export default {
       this.processingWarning = false
 
       try {
-        const result = await nodescriptBE.searchSettings(this.gameId)
+        const result = await apiService.searchSettings(this.gameId)
         
         if (result.status === 'pending') {
           this.processingWarning = true
           return
         }
         
-        this.results = result.data
+        this.results = result.game
       } catch (err) {
         this.error = err.message
       } finally {

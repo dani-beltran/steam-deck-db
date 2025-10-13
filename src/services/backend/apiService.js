@@ -1,12 +1,15 @@
 import axios from 'axios'
 
 /**
- * Nodescript Backend Service
- * Handles API calls to the Nodescript backend for Steam Deck game settings
+ * Backend API Service
  */
-class NodescriptBEService {
+class ApiService {
   constructor() {
-    this.baseUrl = 'https://7vyclhz7.run.nodescript.dev'
+    // Use localhost in development, production URL otherwise
+    this.baseUrl = import.meta.env.DEV 
+      ? 'http://localhost:3001/v1'
+      // TODO change to production URL
+      : 'https://7vyclhz7.run.nodescript.dev'
   }
 
   /**
@@ -21,21 +24,10 @@ class NodescriptBEService {
     }
 
     try {
-      const { data: resBody } = await axios.get(
-        `${this.baseUrl}/steamdeck/game-settings?game_id=${encodeURIComponent(gameId)}`
+      const { data } = await axios.get(
+        `${this.baseUrl}/games/${encodeURIComponent(gameId)}`
       )
-      
-      if (resBody.status === 'pending') {
-        return {
-          status: 'pending',
-          message: 'Settings are being processed'
-        }
-      }
-      
-      return {
-        status: 'success',
-        data: resBody.data
-      }
+      return data;
     } catch (err) {
       console.error('Error fetching game settings:', err)
       
@@ -58,7 +50,7 @@ class NodescriptBEService {
     }
 
     try {
-      const searchUrl = `https://7vyclhz7.run.nodescript.dev/steamdeck/search-games?query=${encodeURIComponent(term)}&limit=${limit}`
+      const searchUrl = `${this.baseUrl}/steam/games?term=${encodeURIComponent(term)}&limit=${limit}`
       const { data } = await axios.get(searchUrl)
       return data;
     } catch (err) {
@@ -70,4 +62,4 @@ class NodescriptBEService {
 
 
 // Export a singleton instance
-export default new NodescriptBEService()
+export default new ApiService()

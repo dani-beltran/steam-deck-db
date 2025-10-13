@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import nodescriptBE from '../../services/backend/nodescriptBE.js'
+import apiService from '../../services/backend/apiService.js'
 import { isMobile } from '../../utils/deviceUtils.js'
 import { trackSearch, trackSearchInput, trackSuggestionSelect, trackGameSelect, trackSearchResults, trackSearchError, trackShowMoreResults } from '../../services/analytics'
 import ErrorMessage from '../common/ErrorMessage.vue'
@@ -161,7 +161,7 @@ export default {
       this.selectedSuggestionIndex = -1
 
       try {
-        const results = await nodescriptBE.searchSteamGamesByName(this.gameName.trim())
+        const results = await apiService.searchSteamGamesByName(this.gameName.trim())
         const games = results.items || []
         this.gameSearchResults = games
 
@@ -257,7 +257,7 @@ export default {
       this.suggestionsLoading = true
       
       try {
-        const suggestions = await nodescriptBE.searchSteamGamesByName(this.gameName.trim(), 7)
+        const suggestions = await apiService.searchSteamGamesByName(this.gameName.trim(), 7)
         // Only show suggestions if the search hasn't been submitted
         this.suggestions = this.gameSearchSubmitted ? [] : suggestions.items || []
         this.showSuggestions = this.suggestions.length > 0
