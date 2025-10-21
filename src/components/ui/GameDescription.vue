@@ -2,11 +2,7 @@
   <section v-if="gameData && !loading" class="game-description" aria-label="Game information">
     <!-- Game Header with Title and Image -->
     <div class="game-header">
-      <div class="game-image-container" v-if="gameImage">
-        <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-link">
-          <img :src="gameImage" :alt="`${gameTitle} cover image`" class="game-image" @error="onImageError" />
-        </a>
-      </div>
+      <GamePreview :game-id="gameId" :game-title="gameTitle" />
       <div class="game-title-section">
         <h2 class="game-title">
           <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-title-link">
@@ -42,12 +38,14 @@
 <script>
 import QuickLink from "../common/QuickLink.vue";
 import Tooltip from "../base/Tooltip.vue";
+import GamePreview from "./GamePreview.vue";
 
 export default {
   name: "GameDescription",
   components: {
     QuickLink,
     Tooltip,
+    GamePreview,
   },
   props: {
     gameData: {
@@ -60,10 +58,7 @@ export default {
     },
   },
   data() {
-    return {
-      gameImage: null,
-      imageLoadError: false,
-    };
+    return {};
   },
   computed: {
     gameTitle() {
@@ -78,16 +73,6 @@ export default {
         : "#";
     },
   },
-  watch: {
-    gameData: {
-      handler(newGame) {
-        if (newGame?.game_id) {
-          this.loadGameImage();
-        }
-      },
-      immediate: true,
-    },
-  },
   methods: {
     getRatingTooltip(rating) {
       const tooltips = {
@@ -97,20 +82,6 @@ export default {
         unsupported: "Game is not supported"
       };
       return tooltips[rating] || "";
-    },
-
-    loadGameImage() {
-      if (!this.gameId) return;
-
-      // Steam's standard game image URL format
-      // This uses Steam's official CDN for game header images
-      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.gameId}/header.jpg`;
-      this.imageLoadError = false;
-    },
-
-    onImageError() {
-      this.imageLoadError = true;
-      this.gameImage = null;
     },
   },
 };
@@ -127,30 +98,6 @@ export default {
   gap: 40px;
   margin-bottom: 25px;
   align-items: flex-end;
-}
-
-.game-image-container {
-  flex-shrink: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.game-image {
-  width: 380px;
-  height: 215px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.2s ease;
-}
-
-.game-image:hover {
-  transform: scale(1.02);
-}
-
-.steam-link {
-  display: block;
-  text-decoration: none;
 }
 
 .steam-title-link {
@@ -250,13 +197,6 @@ export default {
     gap: 15px;
   }
 
-  .game-image {
-    width: 100%;
-    max-width: 280px;
-    height: auto;
-    aspect-ratio: 280/130;
-  }
-
   .game-title {
     font-size: 1.3rem;
   }
@@ -265,11 +205,6 @@ export default {
 @media (max-width: 480px) {
   .game-title {
     font-size: 1.2rem;
-  }
-
-  .game-image {
-    width: 100%;
-    max-width: 100%;
   }
 
   .summary-section {

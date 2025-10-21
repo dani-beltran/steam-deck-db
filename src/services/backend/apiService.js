@@ -43,6 +43,22 @@ class ApiService {
     }
   }
 
+  async fetchSteamGame(gameId) {
+    if (!gameId) {
+      throw new Error('Game ID is required')
+    }
+
+    try {
+      const { data } = await axios.get(
+        `${this.baseUrl}/steam/games/${encodeURIComponent(gameId)}`
+      )
+      return data;
+    } catch (err) {
+      console.error('Error fetching Steam game details:', err)
+      throw new Error('Failed to fetch Steam game details. Please try again.')
+    }
+  }
+
   async searchSteamGamesByName(term, limit = 10) {
     if (!term) {
       throw new Error('Search term is required')
