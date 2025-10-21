@@ -9,7 +9,7 @@
       </thead>
       <tbody>
         <tr v-for="row in data" :key="keyPrefix + '-' + row.key">
-          <td class="property-cell">{{ row.key }}</td>
+          <td class="property-cell">{{ formatKey(row.key) }}</td>
           <td class="value-cell">
             <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
               {{ row.value }}
@@ -40,6 +40,16 @@ export default {
     keyPrefix: {
       type: String,
       default: 'row'
+    }
+  },
+  methods: {
+    formatKey(key) {
+      // Replace underscores with spaces and capitalize every word
+      return key
+        .replace(/_/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     }
   }
 }
