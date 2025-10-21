@@ -138,7 +138,7 @@ export default {
       this.processingWarning = false
 
       try {
-        const result = await apiService.searchSettings(this.gameId)
+        const result = await apiService.fetchGame(this.gameId)
         
         if (result.status === 'queued') {
           this.processingWarning = true

@@ -7,18 +7,17 @@ class ApiService {
   constructor() {
     // Use localhost in development, production URL otherwise
     this.baseUrl = import.meta.env.DEV 
-      ? 'http://localhost:3001/v1'
-      // TODO change to production URL
-      : 'https://7vyclhz7.run.nodescript.dev'
+      ? 'http://localhost:3000'
+      : 'https://api.deckudb.com'
   }
 
   /**
-   * Search for game settings by game ID
+   * Fetch deckudb game entry by game ID
    * @param {string|number} gameId - The Steam game ID
-   * @returns {Promise<Object>} - The game settings data or processing status
+   * @returns {Promise<Object>} - The game details data or processing status
    * @throws {Error} - Throws error with appropriate message for different error types
    */
-  async searchSettings(gameId) {
+  async fetchGame(gameId) {
     if (!gameId) {
       throw new Error('Game ID is required')
     }
