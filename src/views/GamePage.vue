@@ -68,7 +68,7 @@ export default {
     // Add keyboard event listener for backspace key
     document.addEventListener('keydown', this.handleKeydown)
     this.updateDocumentTitle()
-    this.searchSettings()
+    this.loadGame()
   },
   unmounted() {
     // Remove keyboard event listener to prevent memory leaks
@@ -105,7 +105,7 @@ export default {
       document.title = `${this.gameTitle} - Steam Deck Settings DB`
     },
 
-    async searchSettings() {
+    async loadGame() {
       if (!this.gameId) {
         this.error = 'Unknown game ID.'
         return

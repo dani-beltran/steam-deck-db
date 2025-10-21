@@ -162,7 +162,6 @@ export default {
       
       // For each hardware group, keep only the most recent configuration
       const result = []
-      const currentYear = new Date().getFullYear()
       hardwareGroups.forEach(configs => {
         // Sort by posted_at date (most recent first) and take the first one
         const sortedConfigs = configs.sort((a, b) => {
@@ -170,24 +169,7 @@ export default {
           const dateB = b.posted_at ? new Date(b.posted_at) : new Date(0)
           return dateB - dateA // Descending order (most recent first)
         })
-        
-        const mostRecentConfig = sortedConfigs[0]
-        
-        // Check if the most recent config has a date older than current year
-        if (mostRecentConfig.posted_at) {
-          const mostRecentDate = new Date(mostRecentConfig.posted_at)
-          const isOlderThanCurrentYear = mostRecentDate.getFullYear() < currentYear
-          
-          if (isOlderThanCurrentYear) {
-            // Look for a config with null posted_at
-            const nullDateConfig = configs.find(config => !config.posted_at)
-            if (nullDateConfig) {
-              result.push(nullDateConfig)
-              return
-            }
-          }
-        }
-        
+        const mostRecentConfig = sortedConfigs[0] 
         result.push(mostRecentConfig)
       })
       
