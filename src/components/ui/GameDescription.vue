@@ -4,12 +4,7 @@
     <div class="game-header">
       <div class="game-image-container" v-if="gameImage">
         <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-link">
-          <img 
-            :src="gameImage" 
-            :alt="`${gameTitle} cover image`"
-            class="game-image"
-            @error="onImageError"
-          />
+          <img :src="gameImage" :alt="`${gameTitle} cover image`" class="game-image" @error="onImageError" />
         </a>
       </div>
       <div class="game-title-section">
@@ -18,96 +13,102 @@
             {{ gameTitle }}
           </a>
         </h2>
-        
-        <!-- Game Rating and Verification -->
-        <div class="game-badges">
-          <div v-if="gameData.steamdeck_rating" class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`">
-            {{ gameData.steamdeck_rating.toUpperCase() }}
-          </div>
-          <div v-if="gameData.steamdeck_verified" class="verified-badge">
-            ✓ Verified
-          </div>
-          
+
+        <!-- Game Review Summary -->
+        <div v-if="gameData.game_review_summary" class="summary-section">
+          <p class="summary-text">{{ gameData.game_review_summary }}</p>
         </div>
-        
+
         <!-- Quick link to settings -->
-        <QuickLink 
-          href="#recommended-settings" 
-          target-id="recommended-settings" 
-          text="Check the Settings"
-        />
+        <QuickLink href="#recommended-settings" target-id="recommended-settings" text="Check the Settings" />
       </div>
     </div>
 
-    <!-- Game Review Summary -->
-    <div v-if="gameData.game_review_summary" class="summary-section">
-      <p class="summary-text">{{ gameData.game_review_summary }}</p>
+    <!-- Game Rating and Verification -->
+    <div class="game-badges">
+      <div v-if="gameData.steamdeck_rating" class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`" :title="getRatingTooltip(gameData.steamdeck_rating)">
+        {{ gameData.steamdeck_rating.toUpperCase() }}
+      </div>
+      <div v-if="gameData.steamdeck_verified" class="verified-badge" title="Steam Deck verified game">
+        ✓ Verified
+      </div>
     </div>
-
   </section>
 </template>
 
 <script>
-import QuickLink from '../common/QuickLink.vue'
+import QuickLink from "../common/QuickLink.vue";
 
 export default {
-  name: 'GameDescription',
+  name: "GameDescription",
   components: {
-    QuickLink
+    QuickLink,
   },
   props: {
     gameData: {
       type: Object,
-      default: null
+      default: null,
     },
     loading: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       gameImage: null,
-      imageLoadError: false
-    }
+      imageLoadError: false,
+    };
   },
   computed: {
     gameTitle() {
-      return this.gameData.game_name || `Game ID: ${this.gameId}`
+      return this.gameData.game_name || `Game ID: ${this.gameId}`;
     },
     gameId() {
-      return this.gameData?.game_id || ''
+      return this.gameData?.game_id || "";
     },
     steamStoreUrl() {
-      return this.gameId ? `https://store.steampowered.com/app/${this.gameId}/` : '#'
-    }
+      return this.gameId
+        ? `https://store.steampowered.com/app/${this.gameId}/`
+        : "#";
+    },
   },
   watch: {
     gameData: {
       handler(newGame) {
         if (newGame?.game_id) {
-          this.loadGameImage()
+          this.loadGameImage();
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
+    getRatingTooltip(rating) {
+      const tooltips = {
+        native: "Game works natively on linux",
+        gold: "Game works flawlessly after a few changes",
+        platinum: "Game works flawlessly out of the box",
+        unsupported: "Game is not supported"
+      };
+      return tooltips[rating] || "";
+    },
+
     loadGameImage() {
-      if (!this.gameId) return
+      if (!this.gameId) return;
 
       // Steam's standard game image URL format
       // This uses Steam's official CDN for game header images
-      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.gameId}/header.jpg`
-      this.imageLoadError = false
+      this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.gameId}/header.jpg`;
+      this.imageLoadError = false;
     },
-    
+
     onImageError() {
-      this.imageLoadError = true
-      this.gameImage = null
-    }
-  }
-}
+      this.imageLoadError = true;
+      this.gameImage = null;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -118,9 +119,9 @@ export default {
 
 .game-header {
   display: flex;
-  gap: 20px;
+  gap: 40px;
   margin-bottom: 25px;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 .game-image-container {
@@ -131,8 +132,8 @@ export default {
 }
 
 .game-image {
-  width: 280px;
-  height: 130px;
+  width: 380px;
+  height: 215px;
   object-fit: cover;
   display: block;
   transition: transform 0.2s ease;
@@ -178,13 +179,15 @@ export default {
   margin-bottom: 15px;
 }
 
-.rating-badge, .verified-badge {
+.rating-badge,
+.verified-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
   white-space: nowrap;
+  cursor: default;
 }
 
 .rating-badge.rating-gold {
@@ -218,7 +221,6 @@ export default {
 }
 
 .summary-section {
-  margin-bottom: 25px;
   padding: 20px;
   background: #f9fafb;
   border-radius: 12px;
@@ -243,19 +245,19 @@ export default {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .game-image {
     width: 100%;
     max-width: 280px;
     height: auto;
     aspect-ratio: 280/130;
   }
-  
+
   .game-badges {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .game-title {
     font-size: 1.3rem;
   }
@@ -270,7 +272,7 @@ export default {
     width: 100%;
     max-width: 100%;
   }
-  
+
   .summary-section {
     padding: 15px;
   }

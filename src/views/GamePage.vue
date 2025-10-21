@@ -8,42 +8,22 @@
     </div>
 
     <!-- Loading State -->
-    <Spinner 
-      v-if="loading" 
-      message="Searching for game settings..."
-    />
+    <Spinner v-if="loading" message="Searching for game settings..." />
 
     <!-- Error State -->
-    <ErrorMessage 
-      :message="error"
-      @dismiss="clearError"
-      class="error-with-top-margin"
-    />
+    <ErrorMessage :message="error" @dismiss="clearError" class="error-with-top-margin" />
 
     <!-- Game Description Section -->
-    <GameDescription 
-      :game-data="results"
-      :loading="loading"
-    />
+    <GameDescription :game-data="results" :loading="loading" />
 
     <!-- Game Settings Section -->
     <section aria-label="Game Settings" class="settings-section">
-      <GameSettings 
-        :results="results"
-        :loading="loading"
-        :error="error"
-        :search-performed="searchPerformed"
-        :processing-warning="processingWarning"
-        @clear-processing-warning="clearProcessingWarning"
-      />
+      <GameSettings :results="results" :loading="loading" :error="error" :search-performed="searchPerformed"
+        :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
     </section>
 
     <!-- Processing Warning -->
-    <ProcessingWarning 
-      v-if="processingWarning"
-      :game-name="gameTitle"
-      @dismiss="clearProcessingWarning"
-    />
+    <ProcessingWarning v-if="processingWarning" :game-name="gameTitle" @dismiss="clearProcessingWarning" />
   </div>
 </template>
 
@@ -102,17 +82,17 @@ export default {
         this.goBack()
       }
     },
-    
+
     isInInputField(target) {
       // Check if the target element is an input field where backspace should work normally
       const inputTypes = ['INPUT', 'TEXTAREA', 'SELECT']
       return inputTypes.includes(target.tagName) || target.contentEditable === 'true'
     },
-    
+
     goBack() {
       this.$router.push({ name: 'Home' })
     },
-    
+
     clearError() {
       this.error = null
     },
@@ -120,7 +100,7 @@ export default {
     clearProcessingWarning() {
       this.processingWarning = false
     },
-    
+
     updateDocumentTitle() {
       document.title = `${this.gameTitle} - Steam Deck Settings DB`
     },
@@ -139,12 +119,12 @@ export default {
 
       try {
         const result = await apiService.fetchGame(this.gameId)
-        
+
         if (result.status === 'queued') {
           this.processingWarning = true
           return
         }
-        
+
         this.results = result.game
       } catch (err) {
         this.error = err.message
