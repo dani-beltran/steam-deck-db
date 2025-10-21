@@ -47,7 +47,7 @@ export default {
 }
 
 .search-section {
-  margin-bottom: 160px;
+  margin-bottom: 110px;
 }
 
 .popular-section {
@@ -55,10 +55,4 @@ export default {
   max-width: 100%;
 }
 
-@media (max-width: 768px) {
-  .search-section {
-    margin-bottom: 120px;
-  }
-  
-}
 </style>
