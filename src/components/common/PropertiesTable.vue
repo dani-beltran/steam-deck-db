@@ -8,7 +8,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="row in data" :key="keyPrefix + '-' + row.key">
+        <tr v-for="row in filteredData" :key="keyPrefix + '-' + row.key">
           <td class="property-cell">{{ formatKey(row.key) }}</td>
           <td class="value-cell">
             <span v-if="typeof row.value === 'boolean'" :class="row.value ? 'boolean-true' : 'boolean-false'">
@@ -40,6 +40,12 @@ export default {
     keyPrefix: {
       type: String,
       default: 'row'
+    }
+  },
+  computed: {
+    filteredData() {
+      // Filter out rows where value is null or undefined
+      return this.data.filter(row => row.value !== null && row.value !== undefined && row.value !== '');
     }
   },
   methods: {
