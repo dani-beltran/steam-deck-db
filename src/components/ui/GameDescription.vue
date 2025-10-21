@@ -23,7 +23,7 @@
 
     <!-- Game Rating and Verification -->
     <div class="game-badges">
-      <Tooltip v-if="gameData.steamdeck_rating" :text="getRatingTooltip(gameData.steamdeck_rating)">
+      <Tooltip v-if="gameData.steamdeck_rating" :text="getRatingTooltip(gameData.steamdeck_rating)" position="top-right">
         <div class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`">
           {{ gameData.steamdeck_rating.toUpperCase() }}
         </div>
