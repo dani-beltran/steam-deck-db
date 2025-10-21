@@ -26,23 +26,29 @@
 
     <!-- Game Rating and Verification -->
     <div class="game-badges">
-      <div v-if="gameData.steamdeck_rating" class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`" :title="getRatingTooltip(gameData.steamdeck_rating)">
-        {{ gameData.steamdeck_rating.toUpperCase() }}
-      </div>
-      <div v-if="gameData.steamdeck_verified" class="verified-badge" title="Steam Deck verified game">
-        ✓ Verified
-      </div>
+      <Tooltip v-if="gameData.steamdeck_rating" :text="getRatingTooltip(gameData.steamdeck_rating)">
+        <div class="rating-badge" :class="`rating-${gameData.steamdeck_rating}`">
+          {{ gameData.steamdeck_rating.toUpperCase() }}
+        </div>
+      </Tooltip>
+      <Tooltip v-if="gameData.steamdeck_verified" text="Steam Deck verified game">
+        <div class="verified-badge">
+          ✓ Verified
+        </div>
+      </Tooltip>
     </div>
   </section>
 </template>
 
 <script>
 import QuickLink from "../common/QuickLink.vue";
+import Tooltip from "../base/Tooltip.vue";
 
 export default {
   name: "GameDescription",
   components: {
     QuickLink,
+    Tooltip,
   },
   props: {
     gameData: {
@@ -187,7 +193,6 @@ export default {
   font-weight: 600;
   text-transform: uppercase;
   white-space: nowrap;
-  cursor: default;
 }
 
 .rating-badge.rating-gold {
