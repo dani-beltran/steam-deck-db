@@ -18,9 +18,6 @@
         <div v-if="gameData.game_review_summary" class="summary-section">
           <p class="summary-text">{{ gameData.game_review_summary }}</p>
         </div>
-
-        <!-- Quick link to settings -->
-        <QuickLink href="#recommended-settings" target-id="recommended-settings" text="Check the Settings" />
       </div>
     </div>
 
@@ -37,6 +34,8 @@
         </div>
       </Tooltip>
     </div>
+    <!-- Quick link to settings -->
+    <QuickLink href="#recommended-settings" target-id="recommended-settings" text="Check the Settings" />
   </section>
 </template>
 
@@ -256,11 +255,6 @@ export default {
     max-width: 280px;
     height: auto;
     aspect-ratio: 280/130;
-  }
-
-  .game-badges {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .game-title {
