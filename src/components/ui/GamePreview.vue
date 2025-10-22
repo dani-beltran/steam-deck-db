@@ -3,7 +3,7 @@
         <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-link" @mouseenter="onMouseEnter"
             @mouseleave="onMouseLeave">
             <img v-show="!showTrailer" :src="gameDetails.header_image" :alt="`${gameDetails.name} cover image`" class="game-image"/>
-            <video v-if="trailerUrl && showTrailer" :src="trailerUrl" class="game-trailer" autoplay muted loop
+            <video v-show="trailerUrl && showTrailer" ref="videoElement" :src="trailerUrl" class="game-trailer" autoplay muted loop
                 playsinline></video>
         </a>
     </div>
@@ -47,10 +47,20 @@ export default {
         onMouseEnter() {
             if (this.trailerUrl) {
                 this.showTrailer = true;
+                // Resume video playback when mouse enters
+                this.$nextTick(() => {
+                    if (this.$refs.videoElement) {
+                        this.$refs.videoElement.play();
+                    }
+                });
             }
         },
 
         onMouseLeave() {
+            // Pause video before hiding
+            if (this.$refs.videoElement) {
+                this.$refs.videoElement.pause();
+            }
             this.showTrailer = false;
         },
     },
