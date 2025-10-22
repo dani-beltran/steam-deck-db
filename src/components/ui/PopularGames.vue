@@ -59,6 +59,7 @@ export default {
             currentIndex: 0,
             itemsPerSlide: 3,
             swipe: null,
+            isMobile: false,
             popularGames: [
                 { id: 1091500, name: 'Cyberpunk 2077', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg' },
                 { id: 1174180, name: 'Red Dead Redemption 2', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg' },
@@ -82,7 +83,7 @@ export default {
         trackStyle() {
             const translateX = -(this.currentIndex * 100)
             const swipeOffset = this.swipe?.swipeState?.isDragging ?
-                (this.swipe.swipeState.translateX / window.innerWidth) * 100 : 0
+                (this.swipe?.swipeState.translateX / window.innerWidth) * 100 : 0
 
             return {
                 transform: `translateX(calc(${translateX}% + ${swipeOffset}px))`,
@@ -91,25 +92,48 @@ export default {
         }
     },
     mounted() {
-        this.swipe = useSwipe({
-            swipeThreshold: 50,
-            velocityThreshold: 0.3
-        })
-        this.updateItemsPerSlide()
-        window.addEventListener('resize', this.updateItemsPerSlide)
+        this.initCarousel()
+        window.addEventListener('resize', this.updateCarouselOnResize)
     },
     beforeUnmount() {
-        window.removeEventListener('resize', this.updateItemsPerSlide)
+        window.removeEventListener('resize', this.updateCarouselOnResize)
     },
     methods: {
-        updateItemsPerSlide() {
+        initCarousel() {
+            this.updateCarouselOnResize()
+            if (!this.isMobile) {
+                this.swipe = useSwipe({
+                    swipeThreshold: 50,
+                    velocityThreshold: 0.3
+                })
+            }
+        },
+        updateCarouselOnResize() {
             const width = window.innerWidth
+            const wasMobile = this.isMobile
             if (width < 640) {
                 this.itemsPerSlide = 1
+                this.isMobile = true
+                this.currentIndex = 0
             } else if (width < 1024) {
                 this.itemsPerSlide = 2
+                this.isMobile = false
             } else {
                 this.itemsPerSlide = 3
+                this.isMobile = false
+            }
+
+            // Initialize or destroy swipe based on mobile state change
+            if (wasMobile !== this.isMobile) {
+                if (this.isMobile && this.swipe) {
+                    this.swipe.resetSwipeState()
+                    this.swipe = null
+                } else if (!this.isMobile && !this.swipe) {
+                    this.swipe = useSwipe({
+                        swipeThreshold: 50,
+                        velocityThreshold: 0.3
+                    })
+                }
             }
         },
         nextSlide() {
@@ -129,37 +153,36 @@ export default {
             this.$emit('game-selected', game)
         },
         handleTouchStart(event) {
-            this.swipe.handleTouchStart(event)
+            this.swipe?.handleTouchStart(event)
         },
         handleTouchMove(event) {
-            this.swipe.handleTouchMove(event, this.currentIndex, this.totalSlides)
-
+            this.swipe?.handleTouchMove(event, this.currentIndex, this.totalSlides)
             // Prevent scrolling when swiping horizontally
-            if (this.swipe.swipeState.isDragging) {
+            if (this.swipe?.swipeState.isDragging) {
                 event.preventDefault()
             }
         },
         handleTouchEnd() {
-            const result = this.swipe.handleTouchEnd(this.currentIndex, this.totalSlides)
+            const result = this.swipe?.handleTouchEnd(this.currentIndex, this.totalSlides)
             if (result && result.type === 'change') {
                 this.currentIndex = result.newIndex
             }
         },
         handleMouseDown(event) {
-            this.swipe.handleMouseDown(event)
+            this.swipe?.handleMouseDown(event)
         },
         handleMouseMove(event) {
-            this.swipe.handleMouseMove(event, this.currentIndex, this.totalSlides)
+            this.swipe?.handleMouseMove(event, this.currentIndex, this.totalSlides)
         },
         handleMouseUp() {
-            const result = this.swipe.handleMouseEnd(this.currentIndex, this.totalSlides)
+            const result = this.swipe?.handleMouseEnd(this.currentIndex, this.totalSlides)
             if (result && result.type === 'change') {
                 this.currentIndex = result.newIndex
             }
         },
         handleMouseLeave() {
-            if (this.swipe.swipeState.isPointerDown) {
-                this.swipe.resetSwipeState()
+            if (this.swipe?.swipeState.isPointerDown) {
+                this.swipe?.resetSwipeState()
             }
         }
     }
@@ -227,6 +250,13 @@ export default {
 
 .carousel-track-wrapper:active {
     cursor: grabbing;
+}
+
+@media (max-width: 640px) {
+    .carousel-track-wrapper {
+        cursor: default;
+        overflow: visible;
+    }
 }
 
 .carousel-track {
@@ -355,6 +385,8 @@ export default {
 
     .carousel-track {
         flex-direction: column;
+        transform: none !important;
+        transition: none !important;
     }
 
     .carousel-item {
