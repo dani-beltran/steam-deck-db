@@ -67,7 +67,7 @@ export default {
 }
 
 .game-image {
-    width: 380px;
+    width: 460px;
     height: 215px;
     object-fit: cover;
     display: block;
@@ -79,7 +79,7 @@ export default {
 }
 
 .game-trailer {
-    width: 380px;
+    width: 460px;
     height: 215px;
     display: block;
     background: #000;
