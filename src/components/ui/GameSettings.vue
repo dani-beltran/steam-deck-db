@@ -67,13 +67,9 @@
       </div>
     </section>
 
-    <!-- No Results -->
-    <div v-if="searchPerformed && !results && !loading && !error && !processingWarning" class="no-results">
-      <p>No settings found for {{ gameTitle }}</p>
-    </div>
 
     <!-- No Settings Data -->
-    <div v-if="searchPerformed && results && (!results.settings || results.settings.length === 0) && !loading && !error && !processingWarning" class="no-results">
+    <div v-if="searchPerformed && !results?.settings?.length && !loading && !error && !processingWarning" class="no-results">
       <p>No optimization settings available for {{ gameTitle }}</p>
     </div>
   </div>
