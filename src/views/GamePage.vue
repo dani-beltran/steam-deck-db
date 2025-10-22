@@ -14,11 +14,11 @@
     <ErrorMessage :message="error" @dismiss="clearError" class="error-with-top-margin" />
 
     <!-- Game Description Section -->
-    <GameDescription :game-data="results" :loading="loading" />
+    <GameDescription :game-data="deckuGame" :steam-game-details="steamGameDetails" :loading="loading" />
 
     <!-- Game Settings Section -->
     <section aria-label="Game Settings" class="settings-section">
-      <GameSettings :results="results" :loading="loading" :error="error" :search-performed="searchPerformed"
+      <GameSettings :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
         :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
     </section>
 
@@ -52,7 +52,8 @@ export default {
   },
   data() {
     return {
-      results: null,
+      deckuGame: null,
+      steamGameDetails: null,
       loading: false,
       error: null,
       searchPerformed: false,
@@ -61,7 +62,7 @@ export default {
   },
   computed: {
     gameTitle() {
-      return this.results?.game_name || `Game ID: ${this.gameId}`
+      return this.deckuGame?.game_name || `Game ID: ${this.gameId}`
     }
   },
   mounted() {
@@ -113,19 +114,20 @@ export default {
 
       this.loading = true
       this.error = null
-      this.results = null
+      this.deckuGame = null
       this.searchPerformed = true
       this.processingWarning = false
 
       try {
-        const result = await apiService.fetchGame(this.gameId)
+        const deckuGame = await apiService.fetchGame(this.gameId)
 
-        if (result.status === 'queued') {
+        if (deckuGame.status === 'queued') {
           this.processingWarning = true
           return
         }
 
-        this.results = result.game
+        this.deckuGame = deckuGame.game
+        this.steamGameDetails = await apiService.fetchSteamGame(this.gameId);
       } catch (err) {
         this.error = err.message
       } finally {

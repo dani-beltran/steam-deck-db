@@ -2,7 +2,7 @@
   <section v-if="gameData && !loading" class="game-description" aria-label="Game information">
     <!-- Game Header with Title and Image -->
     <div class="game-header">
-      <GamePreview :game-id="gameId" :game-title="gameTitle" />
+      <GamePreview :game-details="steamGameDetails" />
       <div class="game-title-section">
         <h2 class="game-title">
           <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-title-link">
@@ -11,8 +11,8 @@
         </h2>
 
         <!-- Game Review Summary -->
-        <div v-if="gameData.game_review_summary" class="summary-section">
-          <p class="summary-text">{{ gameData.game_review_summary }}</p>
+        <div v-if="steamGameDetails.short_description" class="summary-section">
+          <p class="summary-text">{{ steamGameDetails.short_description }}</p>
         </div>
       </div>
     </div>
@@ -52,17 +52,23 @@ export default {
       type: Object,
       default: null,
     },
+    steamGameDetails: {
+      type: Object,
+      default: null,
+    },
     loading: {
       type: Boolean,
       default: false,
     },
   },
   data() {
-    return {};
+    return {
+      gameDetails: null,
+    };
   },
   computed: {
     gameTitle() {
-      return this.gameData.game_name || `Game ID: ${this.gameId}`;
+      return this.gameData.game_name || this.gameDetails.name;
     },
     gameId() {
       return this.gameData?.game_id || "";
@@ -97,7 +103,7 @@ export default {
   display: flex;
   gap: 40px;
   margin-bottom: 25px;
-  align-items: flex-end;
+  align-items: flex-start;
 }
 
 .steam-title-link {

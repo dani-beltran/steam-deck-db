@@ -1,9 +1,8 @@
 <template>
-    <div class="game-image-container" v-if="gameImage">
+    <div class="game-image-container" v-if="gameDetails && gameDetails.header_image">
         <a :href="steamStoreUrl" target="_blank" rel="noopener noreferrer" class="steam-link" @mouseenter="onMouseEnter"
             @mouseleave="onMouseLeave">
-            <img v-show="!showTrailer" :src="gameImage" :alt="`${gameTitle} cover image`" class="game-image"
-                @error="onImageError" />
+            <img v-show="!showTrailer" :src="gameDetails.header_image" :alt="`${gameDetails.name} cover image`" class="game-image"/>
             <video v-if="trailerUrl && showTrailer" :src="trailerUrl" class="game-trailer" autoplay muted loop
                 playsinline></video>
         </a>
@@ -11,83 +10,39 @@
 </template>
 
 <script>
-import apiService from '../../services/backend/apiService.js'
-
 export default {
     name: "GamePreview",
     props: {
-        gameId: {
-            type: [String, Number],
-            required: true,
-        },
-        gameTitle: {
-            type: String,
-            default: "",
+        // Steam Game Details from Steam API appdetails
+        gameDetails: {
+            type: Object,
+            default: null,
         },
     },
     data() {
         return {
-            gameImage: null,
-            imageLoadError: false,
-            trailerUrl: null,
             showTrailer: false,
         };
     },
     computed: {
         steamStoreUrl() {
-            return this.gameId
-                ? `https://store.steampowered.com/app/${this.gameId}/`
+            return this.gameDetails.steam_appid
+                ? `https://store.steampowered.com/app/${this.gameDetails.steam_appid}/`
                 : "#";
         },
-    },
-    watch: {
-        gameId: {
-            handler(newId) {
-                if (newId) {
-                    this.loadGameImage();
-                    this.loadTrailerUrl();
+        trailerUrl() {
+            if (this.gameDetails.movies && this.gameDetails.movies.length > 0) {
+                // Get the first trailer's webm or mp4 URL
+                const trailer = this.gameDetails.movies[0];
+                if (trailer.webm && trailer.webm.max) {
+                    return trailer.webm.max;
+                } else if (trailer.mp4 && trailer.mp4.max) {
+                    return trailer.mp4.max;
                 }
-            },
-            immediate: true,
+            }
         },
     },
     methods: {
-        loadGameImage() {
-            if (!this.gameId) return;
-            // Steam's standard game image URL format
-            // This uses Steam's official CDN for game header images
-            this.gameImage = `https://cdn.akamai.steamstatic.com/steam/apps/${this.gameId}/header.jpg`;
-            this.imageLoadError = false;
-        },
-
-        onImageError() {
-            this.imageLoadError = true;
-            this.gameImage = null;
-        },
-
-        async loadTrailerUrl() {
-            if (!this.gameId) return;
-
-            try {
-                const gameData = await apiService.fetchSteamGame(this.gameId);
-                if (!gameData) return;
-
-                // Check if the game has movies (trailers)
-                if (gameData.movies && gameData.movies.length > 0) {
-                    // Get the first trailer's webm or mp4 URL
-                    const trailer = gameData.movies[0];
-                    if (trailer.webm && trailer.webm.max) {
-                        this.trailerUrl = trailer.webm.max;
-                    } else if (trailer.mp4 && trailer.mp4.max) {
-                        this.trailerUrl = trailer.mp4.max;
-                    }
-                }
-
-            } catch (error) {
-                console.error('Error loading trailer:', error);
-                this.trailerUrl = null;
-            }
-        },
 
         onMouseEnter() {
             if (this.trailerUrl) {
