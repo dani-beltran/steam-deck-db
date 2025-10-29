@@ -73,6 +73,23 @@ class ApiService {
       throw new Error('Failed to search for games. Please try again.')
     }
   }
+
+  /**
+   * Fetch most played Steam Deck games
+   * @returns {Promise<Object>} - Object containing array of games
+   * @throws {Error} - Throws error if request fails
+   */
+  async fetchMostPlayedGames() {
+    try {
+      const { data } = await axios.get(
+        `${this.baseUrl}/steam/most-played-steam-deck-games`
+      )
+      return data;
+    } catch (err) {
+      console.error('Error fetching most played games:', err)
+      throw new Error('Failed to fetch most played games. Please try again.')
+    }
+  }
 }
 
 

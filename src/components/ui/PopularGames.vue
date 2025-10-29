@@ -2,7 +2,19 @@
     <section aria-label="Popular Games" class="popular-games-section">
         <h2 class="section-title">Popular Games</h2>
 
-        <div class="carousel-container">
+        <!-- Loading State -->
+        <div v-if="isLoading" class="loading-container">
+            <p>Loading popular games...</p>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="error" class="error-container">
+            <p>{{ error }}</p>
+            <button @click="fetchPopularGames" class="retry-button">Retry</button>
+        </div>
+
+        <!-- Games Carousel -->
+        <div v-else-if="popularGames.length > 0" class="carousel-container">
             <button class="carousel-button prev" @click="previousSlide" :disabled="currentIndex === 0"
                 aria-label="Previous games">
                 ‹
@@ -12,7 +24,7 @@
                 @touchend="handleTouchEnd" @mousedown="handleMouseDown" @mousemove="handleMouseMove"
                 @mouseup="handleMouseUp" @mouseleave="handleMouseLeave">
                 <div class="carousel-track" :style="trackStyle">
-                    <div v-for="(game, index) in popularGames" :key="game.id" class="carousel-item">
+                    <div v-for="(game, index) in popularGames" :key="index" class="carousel-item">
                         <div class="popular-game-card" @click="onGameClick(game)" role="button" tabindex="0"
                             @keydown.enter="onGameClick(game)" @keydown.space.prevent="onGameClick(game)"
                             :aria-label="`View ${game.name} settings`">
@@ -26,7 +38,7 @@
                             </div>
                             <div class="popular-game-info">
                                 <h3 class="popular-game-name">{{ game.name }}</h3>
-                                <p class="game-steam-id">Steam ID: {{ game.id }}</p>
+                                <p class="game-steam-id">Steam ID: {{ game.steam_appid }}</p>
                             </div>
                         </div>
                     </div>
@@ -40,7 +52,7 @@
         </div>
 
         <!-- Carousel Indicators -->
-        <div class="carousel-indicators">
+        <div v-if="popularGames.length > 0" class="carousel-indicators">
             <button v-for="(dot, index) in totalSlides" :key="index" class="indicator-dot"
                 :class="{ active: index === currentIndex }" @click="goToSlide(index)"
                 :aria-label="`Go to slide ${index + 1}`"></button>
@@ -50,6 +62,7 @@
 
 <script>
 import { useSwipe } from '../../composables/swipe/useSwipe.js'
+import apiService from '../../services/backend/apiService.js'
 
 export default {
     name: 'PopularGames',
@@ -60,17 +73,9 @@ export default {
             itemsPerSlide: 3,
             swipe: null,
             isMobile: false,
-            popularGames: [
-                { id: 1091500, name: 'Cyberpunk 2077', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg' },
-                { id: 1174180, name: 'Red Dead Redemption 2', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1174180/header.jpg' },
-                { id: 1245620, name: 'Elden Ring', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg' },
-                { id: 271590, name: 'Grand Theft Auto V', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/271590/header.jpg' },
-                { id: 1086940, name: "Baldur's Gate 3", header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg' },
-                { id: 570, name: 'Dota 2', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/570/header.jpg' },
-                { id: 892970, name: 'Valheim', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/892970/header.jpg' },
-                { id: 1938090, name: 'Call of Duty: Black Ops 6', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/1938090/header.jpg' },
-                { id: 2358720, name: 'Black Myth: Wukong', header_image: 'https://cdn.akamai.steamstatic.com/steam/apps/2358720/header.jpg' },
-            ]
+            popularGames: [],
+            isLoading: true,
+            error: null
         }
     },
     computed: {
@@ -93,12 +98,26 @@ export default {
     },
     mounted() {
         this.initCarousel()
+        this.fetchPopularGames()
         window.addEventListener('resize', this.updateCarouselOnResize)
     },
     beforeUnmount() {
         window.removeEventListener('resize', this.updateCarouselOnResize)
     },
     methods: {
+        async fetchPopularGames() {
+            try {
+                this.isLoading = true
+                this.error = null
+                const games = await apiService.fetchMostPlayedGames()
+                this.popularGames = games || []
+            } catch (err) {
+                console.error('Error fetching popular games:', err)
+                this.error = err.message || 'Failed to load popular games'
+            } finally {
+                this.isLoading = false
+            }
+        },
         initCarousel() {
             this.updateCarouselOnResize()
             if (!this.isMobile) {
@@ -203,6 +222,35 @@ export default {
     color: #1f2937;
     margin-bottom: 30px;
     text-align: center;
+}
+
+.loading-container,
+.error-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.loading-container p,
+.error-container p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin-bottom: 16px;
+}
+
+.retry-button {
+    background: var(--primary-color-start);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+    background: var(--primary-color-end);
+    transform: translateY(-2px);
 }
 
 .carousel-container {
