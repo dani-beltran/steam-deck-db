@@ -308,9 +308,9 @@ export default {
 
     selectGameCard(game) {
       trackGameSelect(game, 'search_result')
-      this.gameName = game.name
       this.selectedGameId = game.id
-      this.$emit('game-selected', game)
+      const searchTerm = this.gameName.trim()
+      this.$emit('game-selected', game, searchTerm)
     },
 
     clearError() {

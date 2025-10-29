@@ -30,11 +30,12 @@ export default {
     document.title = 'Steam Deck Settings DB - Game Optimization Settings'
   },
   methods: {
-    onGameSelected(game) {
+    onGameSelected(game, searchTerm) {
       // Navigate to the game page
       this.$router.push({
         name: 'Game',
-        params: { gameId: game.steam_appid ?? game.id }
+        params: { gameId: game.steam_appid ?? game.id },
+        query: searchTerm ? { q: searchTerm } : {}
       })
     }
   }

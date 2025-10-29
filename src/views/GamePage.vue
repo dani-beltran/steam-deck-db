@@ -91,7 +91,15 @@ export default {
     },
 
     goBack() {
-      this.$router.push({ name: 'Home' })
+      // Preserve the search term from the current URL when going back
+      const urlParams = new URLSearchParams(window.location.search)
+      const searchQuery = urlParams.get('q')
+      
+      if (searchQuery) {
+        this.$router.push({ name: 'Home', query: { q: searchQuery } })
+      } else {
+        this.$router.push({ name: 'Home' })
+      }
     },
 
     clearError() {
