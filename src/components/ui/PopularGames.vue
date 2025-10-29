@@ -24,7 +24,7 @@
                 @touchend="handleTouchEnd" @mousedown="handleMouseDown" @mousemove="handleMouseMove"
                 @mouseup="handleMouseUp" @mouseleave="handleMouseLeave">
                 <div class="carousel-track" :style="trackStyle">
-                    <div v-for="(game, index) in popularGames" :key="index" class="carousel-item">
+                    <div v-for="(game, index) in displayedGames" :key="index" class="carousel-item">
                         <div class="popular-game-card" @click="onGameClick(game)" role="button" tabindex="0"
                             @keydown.enter="onGameClick(game)" @keydown.space.prevent="onGameClick(game)"
                             :aria-label="`View ${game.name} settings`">
@@ -57,6 +57,20 @@
                 :class="{ active: index === currentIndex }" @click="goToSlide(index)"
                 :aria-label="`Go to slide ${index + 1}`"></button>
         </div>
+
+        <!-- Show More Button (Mobile Only) -->
+        <div v-if="showMoreButton" class="show-more-container">
+            <button @click="toggleShowAll" class="show-more-button">
+                Show More
+            </button>
+        </div>
+
+        <!-- Show Less Button (Mobile Only) -->
+        <div v-if="isMobile && showAllGames && popularGames.length > mobileDisplayLimit" class="show-more-container">
+            <button @click="toggleShowAll" class="show-more-button">
+                Show Less
+            </button>
+        </div>
     </section>
 </template>
 
@@ -76,10 +90,18 @@ export default {
             popularGames: [],
             isLoading: true,
             error: null,
-            localStorageKey: 'popularGames_currentIndex'
+            localStorageKey: 'popularGames_currentIndex',
+            showAllGames: false,
+            mobileDisplayLimit: 5
         }
     },
     computed: {
+        displayedGames() {
+            if (this.isMobile && !this.showAllGames) {
+                return this.popularGames.slice(0, this.mobileDisplayLimit)
+            }
+            return this.popularGames
+        },
         totalSlides() {
             return Math.ceil(this.popularGames.length / this.itemsPerSlide)
         },
@@ -95,6 +117,9 @@ export default {
                 transform: `translateX(calc(${translateX}% + ${swipeOffset}px))`,
                 transition: this.swipe?.swipeState?.isDragging ? 'none' : 'transform 0.3s ease-in-out'
             }
+        },
+        showMoreButton() {
+            return this.isMobile && !this.showAllGames && this.popularGames.length > this.mobileDisplayLimit
         }
     },
     watch: {
@@ -160,6 +185,11 @@ export default {
                         velocityThreshold: 0.3
                     })
                 }
+            }
+
+            // Reset showAllGames when switching from mobile to desktop
+            if (wasMobile && !this.isMobile) {
+                this.showAllGames = false
             }
         },
         nextSlide() {
@@ -230,6 +260,9 @@ export default {
             } catch (err) {
                 console.warn('Failed to restore current index from localStorage:', err)
             }
+        },
+        toggleShowAll() {
+            this.showAllGames = !this.showAllGames
         }
     }
 }
@@ -502,5 +535,38 @@ export default {
         max-width: 350px;
         padding: 0;
     }
+
+    .show-more-container {
+        margin-top: 0;
+    }
+}
+
+.show-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.show-more-button {
+    background: var(--primary-color-start);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.show-more-button:hover {
+    background: var(--primary-color-end);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.show-more-button:active {
+    transform: translateY(0);
 }
 </style>
