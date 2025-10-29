@@ -330,7 +330,6 @@ export default {
 @media (max-width: 640px) {
     .carousel-track-wrapper {
         cursor: default;
-        overflow: visible;
     }
 }
 
