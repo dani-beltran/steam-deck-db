@@ -60,16 +60,16 @@
 
         <!-- Show More Button (Mobile Only) -->
         <div v-if="showMoreButton" class="show-more-container">
-            <button @click="toggleShowAll" class="show-more-button">
+            <Button @click="toggleShowAll" variant="primary" size="medium">
                 Show More
-            </button>
+            </Button>
         </div>
 
         <!-- Show Less Button (Mobile Only) -->
         <div v-if="isMobile && showAllGames && popularGames.length > mobileDisplayLimit" class="show-more-container">
-            <button @click="toggleShowAll" class="show-more-button">
+            <Button @click="toggleShowAll" variant="primary" size="medium">
                 Show Less
-            </button>
+            </Button>
         </div>
     </section>
 </template>
@@ -77,9 +77,13 @@
 <script>
 import { useSwipe } from '../../composables/swipe/useSwipe.js'
 import apiService from '../../services/backend/apiService.js'
+import Button from '../base/Button.vue'
 
 export default {
     name: 'PopularGames',
+    components: {
+        Button
+    },
     emits: ['game-selected'],
     data() {
         return {
@@ -545,28 +549,5 @@ export default {
     display: flex;
     justify-content: center;
     margin-top: 20px;
-}
-
-.show-more-button {
-    background: var(--primary-color-start);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 32px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.show-more-button:hover {
-    background: var(--primary-color-end);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.show-more-button:active {
-    transform: translateY(0);
 }
 </style>
