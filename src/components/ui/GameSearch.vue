@@ -124,10 +124,24 @@ export default {
       return this.gameSearchResults.length > this.INITIAL_RESULTS_COUNT && !this.showAllResults
     }
   },
+  mounted() {
+    // Check if there's a search query in the URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const searchQuery = urlParams.get('q')
+    
+    if (searchQuery) {
+      this.gameName = searchQuery
+      this.searchGameByName()
+    }
+  },
   methods: {
     async handleSearch(submitSource) {
       clearTimeout(this.debounceTimer)
       this.closeSuggestions()
+      
+      // Update URL with search param
+      this.updateSearchParam(this.gameName)
+      
       this.searchGameByName()
       // Track the search event
       trackSearch(this.gameName, 'game_search', {
@@ -310,6 +324,16 @@ export default {
         this.INITIAL_RESULTS_COUNT
       )
       this.showAllResults = true
+    },
+
+    updateSearchParam(query) {
+      const url = new URL(window.location)
+      if (query && query.trim()) {
+        url.searchParams.set('q', query.trim())
+      } else {
+        url.searchParams.delete('q')
+      }
+      window.history.pushState({}, '', url)
     }
   },
   beforeUnmount() {
