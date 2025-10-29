@@ -34,7 +34,7 @@ export default {
       // Navigate to the game page
       this.$router.push({
         name: 'Game',
-        params: { gameId: game.steam_appid }
+        params: { gameId: game.steam_appid ?? game.id }
       })
     }
   }
