@@ -22,6 +22,8 @@
         :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
     </section>
 
+    <GameDataSources :deckuGame="deckuGame" />
+
     <!-- Processing Warning -->
     <ProcessingWarning v-if="processingWarning" :game-name="gameTitle" @dismiss="clearProcessingWarning" />
   </div>
@@ -34,6 +36,7 @@ import ProcessingWarning from '../components/ui/ProcessingWarning.vue'
 import ErrorMessage from '../components/common/ErrorMessage.vue'
 import Spinner from '../components/base/Spinner.vue'
 import apiService from '../services/backend/apiService.js'
+import GameDataSources from '../components/ui/GameDataSources.vue'
 
 export default {
   name: 'GamePage',
@@ -42,7 +45,8 @@ export default {
     GameDescription,
     ProcessingWarning,
     ErrorMessage,
-    Spinner
+    Spinner,
+    GameDataSources
   },
   props: {
     gameId: {
