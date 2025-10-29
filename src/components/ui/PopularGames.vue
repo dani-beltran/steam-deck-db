@@ -75,7 +75,8 @@ export default {
             isMobile: false,
             popularGames: [],
             isLoading: true,
-            error: null
+            error: null,
+            localStorageKey: 'popularGames_currentIndex'
         }
     },
     computed: {
@@ -96,9 +97,15 @@ export default {
             }
         }
     },
-    mounted() {
+    watch: {
+        currentIndex(newIndex) {
+            this.saveCurrentIndex(newIndex)
+        }
+    },
+    async mounted() {
         this.initCarousel()
-        this.fetchPopularGames()
+        await this.fetchPopularGames()
+        this.restoreCurrentIndex()
         window.addEventListener('resize', this.updateCarouselOnResize)
     },
     beforeUnmount() {
@@ -202,6 +209,26 @@ export default {
         handleMouseLeave() {
             if (this.swipe?.swipeState.isPointerDown) {
                 this.swipe?.resetSwipeState()
+            }
+        },
+        saveCurrentIndex(index) {
+            try {
+                localStorage.setItem(this.localStorageKey, index.toString())
+            } catch (err) {
+                console.warn('Failed to save current index to localStorage:', err)
+            }
+        },
+        restoreCurrentIndex() {
+            try {
+                const savedIndex = localStorage.getItem(this.localStorageKey)
+                if (savedIndex !== null) {
+                    const index = parseInt(savedIndex, 10)
+                    if (!isNaN(index) && index >= 0 && index <= this.maxIndex) {
+                        this.currentIndex = index
+                    }
+                }
+            } catch (err) {
+                console.warn('Failed to restore current index from localStorage:', err)
             }
         }
     }
