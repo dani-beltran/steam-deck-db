@@ -316,6 +316,7 @@ export default {
     flex: 0 0 33.333%;
     padding: 0 10px;
     box-sizing: border-box;
+    min-width: 0; /* Allow flex item to shrink below content size */
 }
 
 .popular-game-card {
@@ -326,6 +327,7 @@ export default {
     cursor: pointer;
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    width: 100%;
 }
 
 .popular-game-card:hover {
@@ -349,6 +351,8 @@ export default {
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+    display: block; /* Remove inline spacing */
+    max-width: 100%; /* Prevent image overflow */
 }
 
 .popular-game-card:hover .popular-game-image {
@@ -423,6 +427,7 @@ export default {
 
     .carousel-item {
         flex: 0 0 50%;
+        min-width: 0; /* Allow flex item to shrink below content size */
     }
 }
 
