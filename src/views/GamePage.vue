@@ -5,7 +5,7 @@
       <button @click="goBack" class="back-button" aria-label="Go back to home">
         ← Back to Search
       </button>
-  <UserProfile :user="user" />
+      <UserProfile :user="user" />
     </div>
 
     <!-- Loading State -->
@@ -16,14 +16,18 @@
 
     <!-- Game Description Section -->
     <GameDescription :game-data="deckuGame" :steam-game-details="steamGameDetails" :loading="loading" />
-
-    <!-- Game Settings Section -->
-    <section aria-label="Game Settings" class="settings-section">
-      <GameSettings :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
-        :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
-    </section>
+    
+    <GameSettings :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
+      :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
 
     <GameDataSources :deckuGame="deckuGame" />
+
+    <ThumbsRating
+      v-if="deckuGame"
+      :user="user"
+      :game="deckuGame"
+      @vote="submitVote"
+    />
 
     <!-- Processing Warning -->
     <ProcessingWarning v-if="processingWarning" :game-name="gameTitle" @dismiss="clearProcessingWarning" />
@@ -39,17 +43,19 @@ import Spinner from '../components/base/Spinner.vue'
 import apiService from '../services/backend/apiService.js'
 import GameDataSources from '../components/ui/GameDataSources.vue'
 import UserProfile from '../components/ui/UserProfile.vue'
+import ThumbsRating from '../components/ui/ThumbsRating.vue'
 
 export default {
   name: 'GamePage',
   components: {
-  GameSettings,
-  GameDescription,
-  ProcessingWarning,
-  ErrorMessage,
-  Spinner,
-  GameDataSources,
-  UserProfile
+    GameSettings,
+    GameDescription,
+    ProcessingWarning,
+    ErrorMessage,
+    Spinner,
+    GameDataSources,
+    UserProfile,
+    ThumbsRating
   },
   props: {
     gameId: {
@@ -111,7 +117,6 @@ export default {
       }
     },
 
-
     clearError() {
       this.error = null
     },
@@ -151,6 +156,11 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+
+    async submitVote(type) {
+      await apiService.submitVote(this.deckuGame.game_id, type);
+      this.user = await apiService.fetchAuthUser();
     }
   }
 }
@@ -204,6 +214,7 @@ export default {
   cursor: pointer;
   padding: 0;
 }
+
 /* Add flex row for navigation buttons */
 .navigation-row {
   display: flex;

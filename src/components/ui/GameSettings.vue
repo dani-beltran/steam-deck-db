@@ -1,4 +1,5 @@
 <template>
+  <section aria-label="Game Settings" class="settings-section">
   <div class="game-settings">
     <!-- Game Performance Summary -->
     <CollapsibleCard
@@ -73,6 +74,7 @@
       <p>No optimization settings available for {{ gameTitle }}</p>
     </div>
   </div>
+  </section>
 </template>
 
 <script>

@@ -7,7 +7,7 @@ import Cookies from 'js-cookie'
 class ApiService {
   constructor() {
     // Use localhost in development, production URL otherwise
-    this.baseUrl = import.meta.env.DEV 
+    this.baseUrl = import.meta.env.DEV
       ? 'http://localhost:3000'
       : 'https://api.deckudb.com'
   }
@@ -30,7 +30,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error fetching game settings:', err)
-      
+
       // Handle different types of errors
       if (err.response && err.response.status === 404) {
         throw new Error('Game settings not found. This game may not have Steam Deck specific settings.')
@@ -110,6 +110,26 @@ class ApiService {
   logout() {
     Cookies.set('logout_referer', window.location.href);
     window.location.href = `${this.baseUrl}/auth/logout`;
+  }
+
+  submitVote(gameId, voteType) {
+    try {
+      if (!gameId) {
+        throw new Error('Game ID is required to submit a vote')
+      }
+      if (!['up', 'down'].includes(voteType)) {
+        throw new Error('Invalid vote type. Must be "up" or "down"')
+      }
+
+      return axios.post(
+        `${this.baseUrl}/games/${gameId}/vote`,
+        { vote: voteType },
+        { withCredentials: true }
+      )
+    } catch (err) {
+      console.error('Error submitting vote:', err)
+      throw new Error('Failed to submit vote. Please try again.')
+    }
   }
 }
 

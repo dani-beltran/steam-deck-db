@@ -1,8 +1,8 @@
 <template>
   <div v-if="user" class="user-profile-wrapper">
-    <div class="user-profile" @click="goToSteamProfile" tabindex="0" role="button" :aria-label="`Go to ${user.displayName}'s Steam profile`">
-      <img :src="user.photos[0].value" :alt="user.displayName" class="user-avatar" />
-      <span class="user-display-name">{{ user.displayName }}</span>
+    <div class="user-profile" @click="goToSteamProfile" tabindex="0" role="button" :aria-label="`Go to ${user.steamProfile.displayName}'s Steam profile`">
+      <img :src="user.steamProfile.photos[0].value" :alt="user.steamProfile.displayName" class="user-avatar" />
+      <span class="user-display-name">{{ user.steamProfile.displayName }}</span>
     </div>
     <button class="logout-btn" @click.stop="logout" aria-label="Logout" title="Logout">
       <LogOut class="logout-icon" />
