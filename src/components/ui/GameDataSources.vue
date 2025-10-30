@@ -32,7 +32,7 @@ export default {
           case 'steam':
             return `https://store.steampowered.com/app/${this.deckuGame.game_id}`;
           case 'protondb':
-            return `https://www.protondb.com/app/${this.deckuGame.game_id}`;
+            return `https://www.protondb.com/app/${this.deckuGame.game_id}?device=steamDeck`;
           case 'sharedeck':
             return `https://sharedeck.games/apps/${this.deckuGame.game_id}`;
           case 'steamdeckhq':
