@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Cookies from 'js-cookie'
 
 /**
  * Backend API Service
@@ -89,6 +90,26 @@ class ApiService {
       console.error('Error fetching most played games:', err)
       throw new Error('Failed to fetch most played games. Please try again.')
     }
+  }
+
+  async fetchAuthUser() {
+    try {
+      const { data } = await axios.get(`${this.baseUrl}/auth/user`, { withCredentials: true })
+      return data;
+    } catch (err) {
+      console.error('Error fetching authenticated user:', err)
+      throw new Error('Failed to fetch authenticated user. Please try again.')
+    }
+  }
+
+  loginWithSteam() {
+    Cookies.set('login_referer', window.location.href);
+    window.location.href = `${this.baseUrl}/auth/steam`;
+  }
+
+  logout() {
+    Cookies.set('logout_referer', window.location.href);
+    window.location.href = `${this.baseUrl}/auth/logout`;
   }
 }
 

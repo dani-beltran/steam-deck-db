@@ -5,10 +5,7 @@
       <button @click="goBack" class="back-button" aria-label="Go back to home">
         ← Back to Search
       </button>
-      <button @click="loginWithSteam" class="steam-login-btn">
-        <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png"
-          alt="Sign in through Steam" style="height: 40px;" />
-      </button>
+  <UserProfile :user="user" />
     </div>
 
     <!-- Loading State -->
@@ -41,16 +38,18 @@ import ErrorMessage from '../components/common/ErrorMessage.vue'
 import Spinner from '../components/base/Spinner.vue'
 import apiService from '../services/backend/apiService.js'
 import GameDataSources from '../components/ui/GameDataSources.vue'
+import UserProfile from '../components/ui/UserProfile.vue'
 
 export default {
   name: 'GamePage',
   components: {
-    GameSettings,
-    GameDescription,
-    ProcessingWarning,
-    ErrorMessage,
-    Spinner,
-    GameDataSources
+  GameSettings,
+  GameDescription,
+  ProcessingWarning,
+  ErrorMessage,
+  Spinner,
+  GameDataSources,
+  UserProfile
   },
   props: {
     gameId: {
@@ -65,7 +64,8 @@ export default {
       loading: false,
       error: null,
       searchPerformed: false,
-      processingWarning: false
+      processingWarning: false,
+      user: null
     }
   },
   computed: {
@@ -73,11 +73,12 @@ export default {
       return this.deckuGame?.game_name || `Game ID: ${this.gameId}`
     }
   },
-  mounted() {
+  async mounted() {
     // Add keyboard event listener for backspace key
     document.addEventListener('keydown', this.handleKeydown)
     this.updateDocumentTitle()
     this.loadGame()
+    this.user = await apiService.fetchAuthUser()
   },
   unmounted() {
     // Remove keyboard event listener to prevent memory leaks
@@ -110,9 +111,6 @@ export default {
       }
     },
 
-    loginWithSteam() {
-      window.location.href = 'http://localhost:3000/auth/steam';
-    },
 
     clearError() {
       this.error = null
