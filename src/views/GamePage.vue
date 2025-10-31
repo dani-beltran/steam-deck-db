@@ -34,10 +34,14 @@
 
     <!-- Processing Warning -->
     <ProcessingWarning v-if="processingWarning" :game-name="gameTitle" @dismiss="clearProcessingWarning" />
+    <div v-if="processingWarning" style="margin-top: 24px; text-align: center;">
+      <RefreshButton @refresh="handleRefresh" :countdown-start="60"/>
+    </div>
   </div>
 </template>
 
 <script>
+import RefreshButton from '../components/common/RefreshButton.vue';
 import GameSettings from '../components/ui/GameSettings.vue'
 import GameDescription from '../components/ui/GameDescription.vue'
 import ProcessingWarning from '../components/ui/ProcessingWarning.vue'
@@ -60,7 +64,8 @@ export default {
     Spinner,
     GameDataSources,
     UserProfile,
-    ThumbsRating
+    ThumbsRating,
+    RefreshButton
   },
   props: {
     gameId: {
@@ -96,6 +101,9 @@ export default {
     document.removeEventListener('keydown', this.handleKeydown)
   },
   methods: {
+    handleRefresh() {
+      window.location.reload();
+    },
     handleKeydown(event) {
       // Check if backspace key is pressed and not in an input field
       if (event.key === 'Backspace' && !this.isInInputField(event.target)) {
