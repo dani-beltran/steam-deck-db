@@ -30,20 +30,16 @@
         </div>
       </Tooltip>
     </div>
-    <!-- Quick link to settings -->
-    <QuickLink href="#recommended-settings" target-id="recommended-settings" text="Check the Settings" />
   </section>
 </template>
 
 <script>
-import QuickLink from "../common/QuickLink.vue";
 import Tooltip from "../base/Tooltip.vue";
 import GamePreview from "./GamePreview.vue";
 
 export default {
   name: "GameDescription",
   components: {
-    QuickLink,
     Tooltip,
     GamePreview,
   },

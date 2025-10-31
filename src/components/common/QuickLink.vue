@@ -1,8 +1,8 @@
 <template>
-  <div class="quick-links">
-    <a :href="href" class="settings-link" @click="handleClick">
+  <div class="quick-links" @click="handleClick">
+    <div class="settings-link">
       <span class="arrow-icon">↓</span> {{ text }}
-    </a>
+    </div>
   </div>
 </template>
 
@@ -10,10 +10,6 @@
 export default {
   name: 'QuickLink',
   props: {
-    href: {
-      type: String,
-      required: true
-    },
     text: {
       type: String,
       default: 'Jump to Settings'
@@ -28,9 +24,13 @@ export default {
       event.preventDefault()
       const element = document.getElementById(this.targetId)
       if (element) {
-        element.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
+        const rect = element.getBoundingClientRect()
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+        const targetY = rect.top + scrollTop + viewportHeight / 2
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
         })
       }
     }
@@ -41,7 +41,6 @@ export default {
 <style scoped>
 .quick-links {
   margin-top: 10px;
-  display: none; /* Hidden by default on desktop */
 }
 
 .settings-link {
@@ -86,12 +85,5 @@ export default {
 
 .settings-link:hover .arrow-icon {
   animation-duration: 0.5s;
-}
-
-/* Show on mobile devices */
-@media (max-width: 768px) {
-  .quick-links {
-    display: block;
-  }
 }
 </style>

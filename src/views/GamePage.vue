@@ -16,8 +16,11 @@
 
     <!-- Game Description Section -->
     <GameDescription :game-data="deckuGame" :steam-game-details="steamGameDetails" :loading="loading" />
+
+    <!-- Quick link to settings -->
+    <QuickLink v-if="deckuGame" class="quick-links-only-mobile" target-id="settings-section" text="Check the Settings" />
     
-    <GameSettings :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
+    <GameSettings id="settings-section" :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
       :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
 
     <GameDataSources :deckuGame="deckuGame" />
@@ -44,10 +47,12 @@ import apiService from '../services/backend/apiService.js'
 import GameDataSources from '../components/ui/GameDataSources.vue'
 import UserProfile from '../components/ui/UserProfile.vue'
 import ThumbsRating from '../components/ui/ThumbsRating.vue'
+import QuickLink from "../components/common/QuickLink.vue";
 
 export default {
   name: 'GamePage',
   components: {
+    QuickLink,
     GameSettings,
     GameDescription,
     ProcessingWarning,
@@ -235,5 +240,12 @@ export default {
   padding: 0;
   display: flex;
   align-items: center;
+}
+
+/* Show on mobile devices */
+@media (min-width: 768px) {
+  .quick-links-only-mobile {
+    display: none;
+  }
 }
 </style>
