@@ -33,8 +33,9 @@ export default {
       apiService.loginWithSteam();
     },
     goToSteamProfile() {
-      if (!this.user) return;
-      const url = this.user.profileUrl || (this.user._json && this.user._json.profileurl) || this.user.profileurl;
+      if (!this.user?.steamProfile) return;
+      const profile = this.user.steamProfile;
+      const url = profile.profileUrl || (profile._json && profile._json.profileurl) || profile.profileurl;
       if (url) {
         window.open(url, '_blank');
       }
