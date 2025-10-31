@@ -128,7 +128,7 @@ export default {
     // Check if there's a search query in the URL
     const urlParams = new URLSearchParams(window.location.search)
     const searchQuery = urlParams.get('q')
-    
+
     if (searchQuery) {
       this.gameName = searchQuery
       this.searchGameByName()
@@ -288,6 +288,7 @@ export default {
     async selectSuggestion(suggestion) {
       trackSuggestionSelect(suggestion.name, this.selectedSuggestionIndex, this.gameName.trim())
       this.closeSuggestions()
+      this.saveRecentSearchedGameId(suggestion.id);
       // Route directly to the game page using the suggestion ID
       this.$router.push(`/game/${suggestion.id}`)
     },
@@ -308,9 +309,38 @@ export default {
 
     selectGameCard(game) {
       trackGameSelect(game, 'search_result')
+
       this.selectedGameId = game.id
-      const searchTerm = this.gameName.trim()
-      this.$emit('game-selected', game, searchTerm)
+      this.saveRecentSearchedGameId(game.id);
+
+      const searchTerm = this.gameName.trim();
+      this.$emit('game-selected', game, searchTerm);
+    },
+
+    saveRecentSearchedGameId(gameId) {
+      const storageKey = 'recentSearchedGameIds';
+      let recentIds = [];
+      try {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          recentIds = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn('Error parsing recent searched game IDs from localStorage:', e);
+      }
+      // Remove if already present
+      recentIds = recentIds.filter(id => id !== gameId);
+      // Add to front
+      recentIds.unshift(gameId);
+      // Limit to 10
+      if (recentIds.length > 10) {
+        recentIds = recentIds.slice(0, 10);
+      }
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(recentIds));
+      } catch (e) {
+        console.warn('Error saving recent searched game IDs to localStorage:', e);
+      }
     },
 
     clearError() {
