@@ -32,8 +32,9 @@
       @vote="submitVote"
     />
 
-    <!-- Processing Warning -->
+    <!-- Processing game view -->
     <ProcessingWarning v-if="processingWarning" :game-name="gameTitle" @dismiss="clearProcessingWarning" />
+    <RandomArt v-if="processingWarning" />
     <div v-if="processingWarning" style="margin-top: 24px; text-align: center;">
       <RefreshButton @refresh="handleRefresh" :countdown-start="60"/>
     </div>
@@ -52,6 +53,7 @@ import GameDataSources from '../components/ui/GameDataSources.vue'
 import UserProfile from '../components/ui/UserProfile.vue'
 import ThumbsRating from '../components/ui/ThumbsRating.vue'
 import QuickLink from "../components/common/QuickLink.vue";
+import RandomArt from '../components/common/RandomArt.vue';
 
 export default {
   name: 'GamePage',
@@ -65,7 +67,8 @@ export default {
     GameDataSources,
     UserProfile,
     ThumbsRating,
-    RefreshButton
+    RefreshButton,
+    RandomArt
   },
   props: {
     gameId: {
@@ -86,7 +89,7 @@ export default {
   },
   computed: {
     gameTitle() {
-      return this.deckuGame?.game_name || `Game ID: ${this.gameId}`
+      return this.steamGameDetails?.name || `Game ID ${this.gameId}`
     }
   },
   async mounted() {
@@ -155,6 +158,7 @@ export default {
       this.processingWarning = false
 
       try {
+        this.steamGameDetails = await apiService.fetchSteamGame(this.gameId);
         const deckuGame = await apiService.fetchGame(this.gameId)
 
         if (deckuGame.status === 'queued') {
@@ -163,7 +167,6 @@ export default {
         }
 
         this.deckuGame = deckuGame.game
-        this.steamGameDetails = await apiService.fetchSteamGame(this.gameId);
       } catch (err) {
         this.error = err.message
       } finally {

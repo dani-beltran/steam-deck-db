@@ -1,14 +1,12 @@
 <template>
   <div class="processing-warning-container">
     <div class="mb-4">
-      <img src="@/assets/decku-logo.png" alt="Decku Logo" class="decku-logo" />
-      <h3>{{ gameName }} Not found</h3>
+      <h3>{{ gameName }}: Not found</h3>
     </div>
     <div class="processing-warning">
       <h3>Game Being Processed <div class="warning-icon">⏳</div> </h3>
       <p>Our caffeinated Decku monkeys are scraping the internet non-stop to find you the best game settings for this game.</p>
       <p>Can't guarantee they will do a good job though. They are monkeys after all.</p>
-      <br/>
       <p>Please check back in a few minutes. In the meantime, feel free to explore other games!</p>
     </div>
   </div>
@@ -30,12 +28,6 @@ export default {
 .processing-warning-container {
   text-align: center;
   margin-bottom: 20px;
-}
-
-.decku-logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 10px;
 }
 
 .warning-icon {
