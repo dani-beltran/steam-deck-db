@@ -9,7 +9,7 @@
     </button>
   </div>
   <button v-else @click="loginWithSteam" class="steam-login-btn" aria-label="Login with Steam">
-    <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png"
+    <img src="@/assets/steam_signin_large.png"
       alt="Sign in through Steam" style="height: 40px;" />
   </button>
 </template>
