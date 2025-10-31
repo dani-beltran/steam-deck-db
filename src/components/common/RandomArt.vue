@@ -1,7 +1,10 @@
 <template>
   <div class="random-art">
-    <img :src="artImageUrl" :alt="caption" class="art-image" />
-  <div class="caption" v-html="caption"></div>
+    <img :src="artImageUrl" :alt="`${captionQuote} - ${captionAuthor}`" class="art-image" />
+  <div class="caption">
+    <blockquote><cite>{{ captionQuote }}</cite></blockquote>
+    <b>{{ captionAuthor }}</b>
+  </div>
   </div>
 </template>
 
@@ -11,23 +14,28 @@ import { computed } from 'vue'
 const artList = [
   {
     file: 'decku_jobs.jpg',
-    caption: '<i>“Stay hungry. Stay foolish.”</i><br/><b>Steve Jobs</b>'
+    caption_quote: '“Stay hungry. Stay foolish.”',
+    caption_author: 'Steve Jobs',
   },
   {
     file: 'el_bufon_stanczyk.png',
-    caption: '<i>“Become who you are.”</i><br/><b>Friedrich Nietzsche</b>'
+    caption_quote: '“Become who you are.”',
+    caption_author: 'Friedrich Nietzsche',
   },
   {
     file: 'el_grito.png',
-    caption: '<i>“One who looks outside, dreams; one who looks inside, awakes.”<br/><b>Carl Jung</b></i>'
+    caption_quote: '“One who looks outside, dreams; one who looks inside, awakes.”',
+    caption_author: 'Carl Jung',
   },
   {
     file: 'gabe.png',
-    caption: '<i>“In Decku we trust.”</i><br/><b>Lord Gaben</b>'
+    caption_quote: '“In Decku we trust.”',
+    caption_author: 'Lord Gaben',
   },
   {
     file: 'houses.png',
-    caption: '<i>“In the end, we only regret the chances we didn\'t take.”</i><br/><b>Lewis Carroll</b>'
+    caption_quote: '“In the end, we only regret the chances we didn\'t take.”',
+    caption_author: 'Lewis Carroll',
   }
 ]
 
@@ -35,7 +43,8 @@ const randomIndex = Math.floor(Math.random() * artList.length)
 const selectedArt = artList[randomIndex]
 
 const artImageUrl = computed(() => `/art/${selectedArt.file}`)
-const caption = selectedArt.caption
+const captionQuote = selectedArt.caption_quote
+const captionAuthor = selectedArt.caption_author
 </script>
 
 <style scoped>
@@ -57,7 +66,6 @@ const caption = selectedArt.caption
   font-size: 1.1rem;
   color: #444;
   text-align: center;
-  line-height: 1.8;
 }
 
 @media screen and (max-width: 768px) {
@@ -68,7 +76,6 @@ const caption = selectedArt.caption
   .caption {
     max-width: 300px;
     font-size: 0.9rem;
-    line-height: 1.4;
   } 
 }
 </style>
