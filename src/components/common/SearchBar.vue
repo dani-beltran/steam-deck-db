@@ -13,6 +13,7 @@
         autocomplete="off"
         spellcheck="false"
         :aria-label="loading ? 'Searching...' : 'Enter search term'"
+        ref="searchInput"
       />
       <Button 
         @click="handleSearch" 
@@ -64,21 +65,25 @@ export default {
   },
   methods: {
     handleSearch() {
+      // Hide mobile keyboard by blurring input
+      if (this.$refs.searchInput) {
+        this.$refs.searchInput.blur();
+      }
       this.$emit('search', this.searchTerm)
     },
-    
+
     handleInput() {
       this.$emit('input', this.searchTerm)
     },
-    
+
     handleKeyDown(event) {
       this.$emit('keydown', event)
     },
-    
+
     handleBlur(event) {
       this.$emit('blur', event)
     },
-    
+
     handleFocus(event) {
       this.$emit('focus', event)
     }
