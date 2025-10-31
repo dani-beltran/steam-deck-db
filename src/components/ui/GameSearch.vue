@@ -9,7 +9,7 @@
         @search="handleSearch"
         @input="onGameNameInput"
         @blur="hideSuggestions"
-        @focus="showSuggestions = suggestions.length > 0"
+        @focus="onSearchBarFocus"
         @keydown="handleSearchBarKeydown"
         aria-label="Search for Steam Deck game settings"
       />
@@ -135,6 +135,58 @@ export default {
     }
   },
   methods: {
+    // When SearchBar is focused, show recent games as suggestions if input is empty.
+    async onSearchBarFocus() {
+      if (this.gameName.trim().length > 0) {
+        // If there's input, show suggestions as usual
+        this.showSuggestions = this.suggestions.length > 0;
+        return;
+      }
+      await this.showRecentGamesAsSuggestions()
+    },
+
+    async showRecentGamesAsSuggestions() {
+      try {
+        this.suggestions = await this.getRecentGames();
+        this.showSuggestions = this.suggestions.length > 0;
+        this.selectedSuggestionIndex = -1;
+      } catch (e) {
+        console.warn('Error fetching recent games by IDs:', e);
+        this.suggestions = [];
+        this.showSuggestions = false;
+      }
+    },
+
+    async getRecentGames() {
+      const recentIds = this.getRecentSearchedGameIds();
+
+      if (recentIds.length === 0) {
+        return [];
+      }
+
+      try {
+        const result = await apiService.fetchSteamGamesByIds(recentIds);
+        return result.items || [];
+      } catch (e) {
+        console.warn('Error fetching recent games by IDs:', e);
+        return [];
+      }
+    },
+
+    getRecentSearchedGameIds() {
+      const storageKey = 'recentSearchedGameIds';
+      let recentIds = [];
+      try {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          recentIds = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.warn('Error parsing recent searched game IDs from localStorage:', e);
+      }
+      return Array.isArray(recentIds) ? recentIds : [];
+    },
+
     async handleSearch(submitSource) {
       clearTimeout(this.debounceTimer)
       this.closeSuggestions()
@@ -247,14 +299,6 @@ export default {
         clearTimeout(this.debounceTimer)
       }
       
-      // If input is empty, hide suggestions
-      if (!this.gameName.trim()) {
-        this.suggestions = []
-        this.showSuggestions = false
-        this.selectedSuggestionIndex = -1
-        return
-      }
-      
       // Set new timer for 300ms delay
       this.debounceTimer = setTimeout(() => {
         this.fetchSuggestions()
@@ -263,8 +307,9 @@ export default {
 
     async fetchSuggestions() {
       if (!this.gameName.trim() || this.gameName.trim().length < 2) {
-        this.suggestions = []
-        this.showSuggestions = false
+        this.suggestions = await this.getRecentGames()
+        this.showSuggestions = this.suggestions.length > 0
+        this.selectedSuggestionIndex = -1
         return
       }
 
