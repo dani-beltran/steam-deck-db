@@ -65,6 +65,23 @@ class ApiService {
     }
   }
 
+  async fetchSteamGamesByIds(gameIds) {
+    if (!gameIds || gameIds.length === 0) {
+      throw new Error('At least one game ID is required')
+    }
+
+    try {
+      const idsParam = gameIds.map(id => encodeURIComponent(id)).join(',')
+      const { data } = await axios.get(
+        `${this.baseUrl}/steam/games/batch?ids=${idsParam}`
+      )
+      return data;
+    } catch (err) {
+      console.error('Error fetching Steam games by IDs:', err)
+      return [];
+    }
+  }
+
   /**
    * Fetch most played Steam Deck games
    * @returns {Promise<Object>} - Object containing array of games
