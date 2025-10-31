@@ -22,12 +22,6 @@ export default {
       type: String,
       required: true
     }
-  },
-  emits: ['dismiss'],
-  methods: {
-    handleDismiss() {
-      this.$emit('dismiss')
-    }
   }
 }
 </script>
