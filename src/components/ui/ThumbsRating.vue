@@ -38,6 +38,12 @@ export default {
     ThumbsUp,
     ThumbsDown
   },
+  data() {
+    return {
+      thumbsUp: 0,
+      thumbsDown: 0
+    };
+  },
   props: {
     user: {
       type: Object,
@@ -53,25 +59,40 @@ export default {
       if (!this.user || !this.user.deckuProfile || !this.user.deckuProfile.votes) {
         return null;
       }
+      console.log("user votes:", this.user.deckuProfile.votes);
+      
       return this.user.deckuProfile.votes.find(vote => vote.game_id === this.game.game_id)?.vote_type || null;
     },
-    thumbsDown() {
-      if (this.userVote === 'down') {
-        return (this.game.thumbs_down ?? 0) + 1;
+  },
+  watch: {
+    game: {
+      immediate: true,
+      handler() {
+        this.thumbsUp = this.game.thumbs_up ?? 0;
+        this.thumbsDown = this.game.thumbs_down ?? 0;
       }
-      return this.game.thumbs_down ?? 0;
-    },
-    thumbsUp() {
-      if (this.userVote === 'up') {
-        return (this.game.thumbs_up ?? 0) + 1;
-      }
-      return this.game.thumbs_up ?? 0;
     }
   },
   emits: ['vote'],
   methods: {
     vote(type) {
-      this.$emit('vote', this.userVote === type ? null : type);
+      const previousVote = this.userVote;
+      // if the same vote is clicked, remove the vote passing null
+      const vote = previousVote === type ? null : type;
+      this.updateVoteCount(previousVote, vote);
+      this.$emit('vote', vote);
+    },
+    updateVoteCount(previousVote, vote) {
+      if (vote === 'up') {
+        this.thumbsUp += 1;
+      } else if (vote === 'down') {
+        this.thumbsDown += 1;
+      }
+      if (previousVote === 'up') {
+        this.thumbsUp -= 1;
+      } else if (previousVote === 'down') {
+        this.thumbsDown -= 1;
+      }
     }
   }
 };
