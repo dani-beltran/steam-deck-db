@@ -159,7 +159,11 @@ export default {
     },
 
     async submitVote(type) {
-      await apiService.submitVote(this.deckuGame.game_id, type);
+      if (type === null ){
+        await apiService.removeVote(this.deckuGame.game_id);
+      } else {
+        await apiService.submitVote(this.deckuGame.game_id, type);
+      }
       this.user = await apiService.fetchAuthUser();
     }
   }

@@ -71,8 +71,7 @@ export default {
   emits: ['vote'],
   methods: {
     vote(type) {
-      if (this.userVote === type) return;
-      this.$emit('vote', type);
+      this.$emit('vote', this.userVote === type ? null : type);
     }
   }
 };

@@ -131,6 +131,21 @@ class ApiService {
       throw new Error('Failed to submit vote. Please try again.')
     }
   }
+
+  removeVote(gameId) {
+    try {
+      if (!gameId) {
+        throw new Error('Game ID is required to remove a vote')
+      }
+      return axios.delete(
+        `${this.baseUrl}/games/${gameId}/vote`,
+        { withCredentials: true }
+      )
+    } catch (err) {
+      console.error('Error removing vote:', err)
+      throw new Error('Failed to remove vote. Please try again.')
+    }
+  }
 }
 
 
