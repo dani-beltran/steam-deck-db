@@ -30,17 +30,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error fetching game settings:', err)
-
-      // Handle different types of errors
-      if (err.response && err.response.status === 404) {
-        throw new Error('Game settings not found. This game may not have Steam Deck specific settings.')
-      } else if (err.response && err.response.status >= 500) {
-        throw new Error('Server error. Please try again later.')
-      } else if (err.code === 'NETWORK_ERROR') {
-        throw new Error('Network error. Please check your connection and try again.')
-      } else {
-        throw new Error('Failed to fetch game settings. Please try again.')
-      }
+      return null;
     }
   }
 
@@ -56,7 +46,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error fetching Steam game details:', err)
-      throw new Error('Failed to fetch Steam game details. Please try again.')
+      return null;
     }
   }
 
@@ -71,7 +61,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error searching for games:', err)
-      throw new Error('Failed to search for games. Please try again.')
+      return [];
     }
   }
 
@@ -88,7 +78,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error fetching most played games:', err)
-      throw new Error('Failed to fetch most played games. Please try again.')
+      return [];
     }
   }
 
@@ -98,7 +88,7 @@ class ApiService {
       return data;
     } catch (err) {
       console.error('Error fetching authenticated user:', err)
-      throw new Error('Failed to fetch authenticated user. Please try again.')
+      return null;
     }
   }
 
@@ -128,7 +118,6 @@ class ApiService {
       )
     } catch (err) {
       console.error('Error submitting vote:', err)
-      throw new Error('Failed to submit vote. Please try again.')
     }
   }
 
@@ -143,7 +132,6 @@ class ApiService {
       )
     } catch (err) {
       console.error('Error removing vote:', err)
-      throw new Error('Failed to remove vote. Please try again.')
     }
   }
 }
