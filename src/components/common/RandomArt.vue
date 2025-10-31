@@ -34,7 +34,7 @@ const artList = [
 const randomIndex = Math.floor(Math.random() * artList.length)
 const selectedArt = artList[randomIndex]
 
-const artImageUrl = computed(() => `/public/art/${selectedArt.file}`)
+const artImageUrl = computed(() => `/art/${selectedArt.file}`)
 const caption = selectedArt.caption
 </script>
 
