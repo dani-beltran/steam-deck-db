@@ -2,7 +2,7 @@
   <div class="game-page">
     <!-- Back to Home and Steam Button Row -->
     <div class="navigation-row">
-      <Button @click="goBack" aria-label="Go back to home">
+      <Button @click="goBack" aria-label="Go back to home" size="small">
         ← Back to Search
       </Button>
       <UserProfile :user="user" />
