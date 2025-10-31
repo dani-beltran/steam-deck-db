@@ -23,7 +23,7 @@
     <GameSettings id="settings-section" :results="deckuGame" :loading="loading" :error="error" :search-performed="searchPerformed"
       :processing-warning="processingWarning" @clear-processing-warning="clearProcessingWarning" />
 
-    <GameDataSources :deckuGame="deckuGame" />
+    <GameDataSources class="game-data-sources" :deckuGame="deckuGame" />
 
     <ThumbsRating
       v-if="deckuGame"
@@ -230,6 +230,10 @@ export default {
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.game-data-sources {
   margin-bottom: 2rem;
 }
 
